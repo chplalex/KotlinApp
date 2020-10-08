@@ -1,6 +1,6 @@
-package com.example.kotlinapp.data
+package com.example.NotesGB.data
 
-import com.example.kotlinapp.data.model.Note
+import com.example.NotesGB.data.model.Note
 
 object Repository {
 

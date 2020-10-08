@@ -1,4 +1,4 @@
-package com.example.kotlinapp.data.model
+package com.example.NotesGB.data.model
 
 class Note(var title: String, var body: String, var color: Int) {
 

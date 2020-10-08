@@ -1,12 +1,12 @@
-package com.example.kotlinapp.ui.main
+package com.example.NotesGB.ui.main
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kotlinapp.R
-import com.example.kotlinapp.data.model.Note
+import com.example.NotesGB.R
+import com.example.NotesGB.data.model.Note
 
 class MainAdapter : RecyclerView.Adapter<NoteViewHolder>() {
 

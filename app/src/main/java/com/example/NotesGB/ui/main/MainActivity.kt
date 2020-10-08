@@ -1,10 +1,9 @@
-package com.example.kotlinapp.ui.main
+package com.example.NotesGB.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.example.kotlinapp.R
+import com.example.NotesGB.R
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

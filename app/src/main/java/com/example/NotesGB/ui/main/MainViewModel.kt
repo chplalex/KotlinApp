@@ -1,9 +1,9 @@
-package com.example.kotlinapp.ui.main
+package com.example.NotesGB.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.kotlinapp.data.Repository
+import com.example.NotesGB.data.Repository
 
 class MainViewModel : ViewModel() {
 
