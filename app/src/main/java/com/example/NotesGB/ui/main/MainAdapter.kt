@@ -1,9 +1,11 @@
 package com.example.NotesGB.ui.main
 
+import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.NotesGB.R
 import com.example.NotesGB.data.model.Note
@@ -37,7 +39,8 @@ class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         with(note) {
             viewTitle.text = title
             viewBody.text = body
-            itemView.setBackgroundColor(color)
+            @Suppress("DEPRECATION") // minSDK for this app is 21
+            itemView.setBackgroundColor(itemView.context.resources.getColor(color.id))
         }
     }
 }
