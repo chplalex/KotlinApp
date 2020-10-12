@@ -1,6 +1,8 @@
 <resources>
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     </style>
+    <style name="AppThemeSystem" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    </style>
     <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar">
     </style>
     <style name="AppThemeDark" parent="Theme.MaterialComponents.NoActionBar">

@@ -1,4 +1,4 @@
-package com.example.kotlinapp;
+package com.example.NotesGB;
 
 import org.junit.Test;
 

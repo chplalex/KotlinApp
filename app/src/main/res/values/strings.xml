@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Kotlin Test App</string>
+    <string name="app_name">GeekBrains Notes</string>
+    <string name="tool_note_title">Geekbrains + Kotlin forever</string>
+    <string name="tool_note_body">Я Kotlin бы выучил только за то, что на нем разрабатывал Вортон!</string>
 </resources>
