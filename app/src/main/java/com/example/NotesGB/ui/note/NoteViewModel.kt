@@ -13,7 +13,6 @@ class NoteViewModel(private val repository: Repository = Repository) : ViewModel
     }
 
     override fun onCleared() {
-        super.onCleared()
-        if (pendingNote != null) repository.saveNote(pendingNote!!)
+        pendingNote?.let { repository.saveNote(it) }
     }
 }

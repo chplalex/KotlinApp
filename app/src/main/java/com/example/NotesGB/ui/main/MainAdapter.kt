@@ -8,12 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.NotesGB.R
 import com.example.NotesGB.data.model.Note
 
-class MainAdapter(private val onItemClickListener: OnItemClickListener) :
+class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
         RecyclerView.Adapter<MainAdapter.NoteViewHolder>() {
-
-    interface OnItemClickListener {
-        fun onItemClick(note: Note)
-    }
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -21,17 +17,15 @@ class MainAdapter(private val onItemClickListener: OnItemClickListener) :
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_note, parent, false)
-        return NoteViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NoteViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_note,
+                    parent,
+                    false))
 
     override fun getItemCount() = notes.size
 
-    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.bind(notes[position])
-    }
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) = holder.bind(notes[position])
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val viewTitle = itemView.findViewById<TextView>(R.id.title)
@@ -44,7 +38,7 @@ class MainAdapter(private val onItemClickListener: OnItemClickListener) :
                 @Suppress("DEPRECATION") // minSDK for this app is 21
                 itemView.setBackgroundColor(itemView.context.resources.getColor(color.id))
             }
-            itemView.setOnClickListener { onItemClickListener.onItemClick(note) }
+            itemView.setOnClickListener { onClickListener?.invoke(note) }
         }
     }
 
