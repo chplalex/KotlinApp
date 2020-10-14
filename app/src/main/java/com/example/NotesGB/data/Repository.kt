@@ -1,31 +1,66 @@
 package com.example.NotesGB.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.NotesGB.data.model.Color.*
 import com.example.NotesGB.data.model.Note
+import java.util.*
 
 object Repository {
 
-    val notes: List<Note> = listOf(
-            Note("Моя первая заметка",
+    private val notesLiveData = MutableLiveData<List<Note>>()
+
+    val notes: MutableList<Note> = mutableListOf(
+            Note(UUID.randomUUID().toString(),
+                    "Моя первая заметка",
                     "Kotlin это современно",
-                    0xfff06292.toInt()),
-            Note("Моя вторая заметка",
+                    WHITE),
+            Note(UUID.randomUUID().toString(),
+                    "Моя вторая заметка",
                     "Kotlin это выразительно",
-                    0xff9575cd.toInt()),
-            Note("Моя третья заметка",
+                    BLUE),
+            Note(UUID.randomUUID().toString(),
+                    "Моя третья заметка",
                     "Kotlin это кратко",
-                    0xff64b5f6.toInt()),
-            Note("Моя четвертая заметка",
+                    GREEN),
+            Note(UUID.randomUUID().toString(),
+                    "Моя четвертая заметка",
                     "Kotlin это будущее",
-                    0xff4db6ac.toInt()),
-            Note("Моя пятая заметка",
+                    PINK),
+            Note(UUID.randomUUID().toString(),
+                    "Моя пятая заметка",
                     "Kotlin это на долго",
-                    0xffb2ff59.toInt()),
-            Note("Моя шестая заметка",
+                    RED),
+            Note(UUID.randomUUID().toString(),
+                    "Моя шестая заметка",
                     "Kotlin это производительно",
-                    0xffffeb3b.toInt()),
-            Note("Моя седьмая заметка",
+                    YELLOW),
+            Note(UUID.randomUUID().toString(),
+                    "Моя седьмая заметка",
                     "Kotlin это к деньгам",
-                    0xffff6e40.toInt())
+                    VIOLET)
     )
 
+    init {
+        notesLiveData.value = notes
+    }
+
+    fun getNotes(): LiveData<List<Note>> = notesLiveData
+
+    fun saveNote(note: Note) {
+        addOrReplaceNote(note)
+        notesLiveData.value = notes
+    }
+
+    private fun addOrReplaceNote(note: Note) {
+
+        for (i in notes.indices) {
+            if (notes[i] == note) {
+                notes[i] = note
+                return
+            }
+        }
+
+        notes.add(note)
+    }
 }

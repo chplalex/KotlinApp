@@ -1,9 +1,22 @@
 package com.example.NotesGB.data.model
 
-class Note(var title: String, var body: String, var color: Int) {
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+import java.util.*
 
-    constructor() : this("", "", 0xfff06292.toInt())
+@Parcelize
+data class Note(
+        val id : String,
+        val title: String,
+        val body: String,
+        val color: Color = Color.WHITE,
+        val lastChanged: Date = Date()) : Parcelable {
 
-    constructor(title: String, note: String) : this(title, note, 0xfff06292.toInt())
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        return id == (other as Note).id
+    }
 
+    override fun hashCode(): Int = id.hashCode()
 }

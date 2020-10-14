@@ -2,4 +2,8 @@
     <string name="app_name">GeekBrains Notes</string>
     <string name="tool_note_title">Geekbrains + Kotlin forever</string>
     <string name="tool_note_body">Я Kotlin бы выучил только за то, что на нем разрабатывал Вортон!</string>
+    <string name="new_note_title">Новая заметка</string>
+    <string name="hint_note_title">Введите заголовок заметки</string>
+    <string name="hint_note_body">Введите текст заметки</string>
+    <string name="fab_content_description">Создать новую заметку</string>
 </resources>
