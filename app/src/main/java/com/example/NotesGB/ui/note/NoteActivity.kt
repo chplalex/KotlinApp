@@ -101,5 +101,4 @@ class NoteActivity : AppCompatActivity() {
     private fun newNote(): Note = Note(UUID.randomUUID().toString(),
             txtNoteTitle.text.toString(),
             txtNoteBody.text.toString())
-
 }

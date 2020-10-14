@@ -16,17 +16,13 @@ class FABBehavior(context: Context, attributeSet: AttributeSet) : FloatingAction
     override fun onNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionButton, target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, type: Int) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
 
-        if (dyConsumed <= 0) return
-
-        if (child.visibility == View.VISIBLE) {
+        if (dyConsumed > 0 &&  child.visibility == View.VISIBLE) {
             child.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
-
                 override fun onHidden(fab: FloatingActionButton) {
                     fab.visibility = View.INVISIBLE
                 }
-
             })
-        } else {
+        } else if (dyConsumed < 0 &&  child.visibility != View.VISIBLE) {
             child.show()
         }
     }

@@ -22,10 +22,8 @@ class MainActivity : AppCompatActivity() {
 
         mainRecycler.adapter = adapter
 
-        viewModel.viewState().observe(this,
-                {t -> t?.let { adapter.notes = it.notes }})
+        viewModel.viewState().observe(this, { t -> t?.let { adapter.notes = it.notes } })
 
         fab.setOnClickListener { NoteActivity.start(context = this)  }
     }
-
 }
