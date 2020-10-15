@@ -1,7 +1,6 @@
 package com.example.NotesGB.ui.note
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.example.NotesGB.data.Repository
 import com.example.NotesGB.data.model.Note
 import com.example.NotesGB.data.model.NoteResult
@@ -22,8 +21,8 @@ class NoteViewModel(val repository: Repository = Repository) : BaseViewModel<Not
             if (t == null) return@Observer
 
             when (t) {
-                is Success<*> -> viewStateLivedata.value = NoteViewState(note = t.data as? Note)
-                is Error -> viewStateLivedata.value = NoteViewState(error = t.error)
+                is Success<*> -> viewStateLiveData.value = NoteViewState(note = t.data as? Note)
+                is Error -> viewStateLiveData.value = NoteViewState(error = t.error)
             }
         })
     }

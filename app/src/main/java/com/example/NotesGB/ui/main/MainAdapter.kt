@@ -23,7 +23,9 @@ class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
                     parent,
                     false))
 
-    override fun getItemCount() = notes.size
+    override fun getItemCount(): Int {
+        return notes.size
+    }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) = holder.bind(notes[position])
 

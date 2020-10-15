@@ -8,7 +8,7 @@ import com.example.NotesGB.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
-abstract class BaseActivity<T, S: BaseViewState<T>> : AppCompatActivity() {
+abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
     abstract val viewModel: BaseViewModel<T, S>
     abstract val layoutRes: Int
@@ -17,18 +17,13 @@ abstract class BaseActivity<T, S: BaseViewState<T>> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(layoutRes)
 
-        viewModel.getViewState().observe(this, object : Observer<S> {
-            override fun onChanged(t: S?) {
-                if (t == null) return
-                if (t.data != null) renderData(t.data!!)
-                if (t.error != null) renderError(t.error!!)
-            }
+        viewModel.getViewState().observe(this, { t ->
+            t?.data?.let { renderData(it) }
+            t?.error?.let { renderError(it) }
         })
     }
 
-    protected fun renderError(error: Throwable) {
-        if (error.message != null) showError(error.message!!)
-    }
+    protected fun renderError(error: Throwable) = error.message?.let { showError(it) }
 
     abstract fun renderData(data: T)
 
@@ -37,5 +32,4 @@ abstract class BaseActivity<T, S: BaseViewState<T>> : AppCompatActivity() {
         snackbar.setAction(R.string.ok_btn_title, View.OnClickListener { snackbar.dismiss() })
         snackbar.show()
     }
-
 }

@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.NotesGB.data.model.Note
 import com.example.NotesGB.data.model.NoteResult
 import com.example.NotesGB.extensions.TAG
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
@@ -19,12 +18,19 @@ class FirestoreProvider : RemoteDataProvider {
     override fun subscribeToAllNotes(): LiveData<NoteResult> {
         val result = MutableLiveData<NoteResult>()
 
-        notesReference.addSnapshotListener { value, error ->
+        notesReference.addSnapshotListener { snapshot, error ->
+            Log.d(TAG, "addSnapshotListener(), error = $error")
+
             if (error == null) {
 
-                if (value != null) {
+                if (snapshot != null) {
                     val notes = mutableListOf<Note>()
-                    for (doc: QueryDocumentSnapshot in value) notes.add(doc.toObject(Note::class.java))
+                    for (doc: QueryDocumentSnapshot in snapshot) {
+                        val note = doc.toObject(Note::class.java)
+                        Log.d(TAG, "subscribeToAllNotes(), note.title = ${note.title} note.body = ${note.body}")
+                        notes.add(note)
+                    }
+                    Log.d(TAG, "notes.size = ${notes.size}")
                     result.value = NoteResult.Success(notes)
                 }
 
@@ -41,8 +47,15 @@ class FirestoreProvider : RemoteDataProvider {
 
         notesReference.document(id)
                 .get()
-                .addOnSuccessListener { result.value = NoteResult.Success(it.toObject(Note::class.java)) }
-                .addOnFailureListener { result.value = NoteResult.Error(it) }
+                .addOnSuccessListener {
+                    val note = it.toObject(Note::class.java)
+                    Log.d(TAG, "getNoteById(), note.title = ${note?.title} note.body = ${note?.body}")
+                    result.value = NoteResult.Success(note)
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "getNoteById(), error = $it")
+                    result.value = NoteResult.Error(it)
+                }
 
         return result
     }
@@ -52,8 +65,14 @@ class FirestoreProvider : RemoteDataProvider {
 
         notesReference.document(note.id)
                 .set(note)
-                .addOnSuccessListener { result.value = NoteResult.Success(note) }
-                .addOnFailureListener { result.value = NoteResult.Error(it) }
+                .addOnSuccessListener {
+                    Log.d(TAG, "saveNote() success")
+                    result.value = NoteResult.Success(note)
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "saveNote() error = $it")
+                    result.value = NoteResult.Error(it)
+                }
 
         return result
     }
