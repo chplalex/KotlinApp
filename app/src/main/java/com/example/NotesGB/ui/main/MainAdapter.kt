@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.NotesGB.R
 import com.example.NotesGB.data.model.Note
 
-class MainAdapter : RecyclerView.Adapter<NoteViewHolder>() {
+class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
+        RecyclerView.Adapter<MainAdapter.NoteViewHolder>() {
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -16,28 +17,31 @@ class MainAdapter : RecyclerView.Adapter<NoteViewHolder>() {
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_note, parent, false)
-        return NoteViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NoteViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_note,
+                    parent,
+                    false))
 
     override fun getItemCount() = notes.size
 
-    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.bind(notes[position])
-    }
-}
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) = holder.bind(notes[position])
 
-class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    private val viewTitle = itemView.findViewById<TextView>(R.id.title)
-    private val viewBody = itemView.findViewById<TextView>(R.id.body)
+    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val viewTitle = itemView.findViewById<TextView>(R.id.title)
+        private val viewBody = itemView.findViewById<TextView>(R.id.body)
 
-    fun bind(note: Note) {
-        with(note) {
-            viewTitle.text = title
-            viewBody.text = body
-            itemView.setBackgroundColor(color)
+        fun bind(note: Note) {
+            with(note) {
+                viewTitle.text = title
+                viewBody.text = body
+                @Suppress("DEPRECATION") // minSDK for this app is 21
+                itemView.setBackgroundColor(itemView.context.resources.getColor(color.id))
+            }
+            itemView.setOnClickListener { onClickListener?.invoke(note) }
         }
     }
+
 }
+
+
