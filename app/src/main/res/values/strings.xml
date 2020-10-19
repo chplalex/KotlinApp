@@ -6,4 +6,5 @@
     <string name="hint_note_title">Введите заголовок заметки</string>
     <string name="hint_note_body">Введите текст заметки</string>
     <string name="fab_content_description">Создать новую заметку</string>
+    <string name="ok_btn_title">Понятно</string>
 </resources>
