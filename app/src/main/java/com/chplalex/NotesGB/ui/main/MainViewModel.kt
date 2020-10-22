@@ -8,12 +8,13 @@ import com.chplalex.NotesGB.data.model.NoteResult.Success
 import com.chplalex.NotesGB.data.model.NoteResult.Error
 import com.chplalex.NotesGB.ui.base.BaseViewModel
 
+@Suppress("UNCHECKED_CAST")
 class MainViewModel(private val repository: Repository = Repository) : BaseViewModel<List<Note>?, MainViewState>() {
 
     private val repositoryNotes = repository.getNotes()
 
     private val notesObserver = Observer<NoteResult> { t ->
-        t ?: return@Observer
+        val noteResult = t ?: return@Observer
 
         when (t) {
             is Success<*> -> viewStateLiveData.value = MainViewState(notes = t.data as? List<Note>)
