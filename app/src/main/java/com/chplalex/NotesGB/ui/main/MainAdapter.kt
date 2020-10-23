@@ -1,12 +1,14 @@
-package com.example.NotesGB.ui.main
+package com.chplalex.NotesGB.ui.main
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.NotesGB.R
-import com.example.NotesGB.data.model.Note
+import com.chplalex.NotesGB.R
+import com.chplalex.NotesGB.data.model.Color
+import com.chplalex.NotesGB.data.model.Color.*
+import com.chplalex.NotesGB.data.model.Note
 
 class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
         RecyclerView.Adapter<MainAdapter.NoteViewHolder>() {
@@ -36,12 +38,21 @@ class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
                 viewTitle.text = title
                 viewBody.text = body
                 @Suppress("DEPRECATION") // minSDK for this app is 21
-                itemView.setBackgroundColor(itemView.context.resources.getColor(color.id))
+                itemView.setBackgroundColor(itemView.context.resources.getColor(colorId(color)))
             }
             itemView.setOnClickListener { onClickListener?.invoke(note) }
         }
     }
+}
 
+private fun colorId(color: Color) = when (color) {
+    WHITE -> R.color.color_white
+    YELLOW -> R.color.color_yellow
+    GREEN -> R.color.color_green
+    BLUE -> R.color.color_blue
+    RED -> R.color.color_red
+    VIOLET -> R.color.color_violet
+    PINK -> R.color.color_pink
 }
 
 

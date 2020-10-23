@@ -1,4 +1,4 @@
-package com.example.NotesGB.ui.common
+package com.chplalex.NotesGB.ui.common
 
 import android.content.Context
 import android.util.AttributeSet

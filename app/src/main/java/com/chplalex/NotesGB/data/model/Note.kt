@@ -1,4 +1,4 @@
-package com.example.NotesGB.data.model
+package com.chplalex.NotesGB.data.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
@@ -6,9 +6,9 @@ import java.util.*
 
 @Parcelize
 data class Note(
-        val id : String,
-        val title: String,
-        val body: String,
+        val id : String = "",
+        val title: String = "",
+        val body: String = "",
         val color: Color = Color.WHITE,
         val lastChanged: Date = Date()) : Parcelable {
 
