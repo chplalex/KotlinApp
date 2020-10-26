@@ -29,6 +29,7 @@ class NoteViewModel(val repository: Repository = Repository) : BaseViewModel<Not
     override fun onCleared() {
         pendingNote?.let { repository.saveNote(it) }
         noteLiveData?.removeObserver(noteObserver)
+        super.onCleared()
     }
 
     fun loadNote(id: String) {
