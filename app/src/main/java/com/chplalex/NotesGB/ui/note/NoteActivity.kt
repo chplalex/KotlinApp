@@ -7,7 +7,9 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.chplalex.NotesGB.R
 import com.chplalex.NotesGB.data.model.Color
@@ -16,6 +18,8 @@ import com.chplalex.NotesGB.extensions.format
 import com.chplalex.NotesGB.extensions.getColorInt
 import com.chplalex.NotesGB.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.startActivity
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
@@ -26,10 +30,8 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
 
         private val NOTE_KEY = Note::class.java.name
 
-        fun start(context: Context, id: String? = null) = Intent(context, NoteActivity::class.java).apply {
-            putExtra(NOTE_KEY, id)
-            context.startActivity(this)
-        }
+        fun start(context: Context, id: String? = null) =
+                context.startActivity<NoteActivity>(NOTE_KEY to id)
 
     }
 
@@ -89,18 +91,36 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         toolbar.setBackgroundColor(color.getColorInt(this@NoteActivity))
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?) =
+            menuInflater.inflate(R.menu.menu_note, menu)?.let { true }
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         home -> {
             saveNoteIntoViewModel.run()
             onBackPressed()
             true
         }
+        R.id.menu_note_palette -> togglePalette().let { true }
+        R.id.menu_note_delete -> deleteNote().let { true }
         else -> super.onOptionsItemSelected(item)
     }
 
     private fun newNote(): Note = Note(UUID.randomUUID().toString(),
             txtNoteTitle.text.toString(),
             txtNoteBody.text.toString())
+
+    private fun deleteNote() {
+        alert {
+            titleResource = R.string.delete_note_title
+            messageResource = R.string.delete_note_message
+            positiveButton(R.string.ok_btn_title) { ViewModel.deleteNote() }
+            negativeButton(R.string.cancel_btn_title) { dialog -> dialog.dismiss() }
+        }.show()
+    }
+
+    private fun togglePalette() {
+
+    }
 
     override fun renderData(data: Note?) {
         note = data

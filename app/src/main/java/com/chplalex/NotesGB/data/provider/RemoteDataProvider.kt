@@ -8,6 +8,7 @@ import com.chplalex.NotesGB.data.model.User
 interface RemoteDataProvider {
     fun getNotes(): LiveData<NoteResult>
     fun getNoteById(id: String): LiveData<NoteResult>
+    fun deleteNote(id: String): LiveData<NoteResult>
     fun saveNote(note: Note): LiveData<NoteResult>
     fun getCurrentUser(): LiveData<User?>
 }

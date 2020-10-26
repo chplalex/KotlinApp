@@ -9,6 +9,8 @@ import com.chplalex.NotesGB.R
 import com.chplalex.NotesGB.data.model.Color
 import com.chplalex.NotesGB.data.model.Color.*
 import com.chplalex.NotesGB.data.model.Note
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_note.*
 
 class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
         RecyclerView.Adapter<MainAdapter.NoteViewHolder>() {
@@ -29,22 +31,21 @@ class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) = holder.bind(notes[position])
 
-    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val txtTitle = itemView.findViewById<TextView>(R.id.txtTitle)
-        private val txtBody = itemView.findViewById<TextView>(R.id.txtBody)
+    inner class NoteViewHolder(override val containerView: View) :
+            RecyclerView.ViewHolder(containerView),
+            LayoutContainer {
 
-        fun bind(note: Note) {
-            with(note) {
-                txtTitle.text = title
-                txtBody.text = body
-                @Suppress("DEPRECATION") // minSDK for this app is 21
-                itemView.setBackgroundColor(itemView.context.resources.getColor(colorId(color)))
-            }
-            itemView.setOnClickListener { onClickListener?.invoke(note) }
+        fun bind(note: Note) = with(note) {
+            txtTitle.text = title
+            txtBody.text = body
+            @Suppress("DEPRECATION")
+            itemView.setBackgroundColor(itemView.context.resources.getColor(colorId(color)))
+            itemView.setOnClickListener { onClickListener?.invoke(this) }
         }
     }
 }
 
+// TODO: переделать на функцию-расширение класса Color
 private fun colorId(color: Color) = when (color) {
     WHITE -> R.color.color_white
     YELLOW -> R.color.color_yellow

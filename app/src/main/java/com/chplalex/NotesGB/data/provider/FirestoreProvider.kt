@@ -6,6 +6,7 @@ import com.chplalex.NotesGB.data.errors.NoAuthException
 import com.chplalex.NotesGB.data.model.Note
 import com.chplalex.NotesGB.data.model.NoteResult
 import com.chplalex.NotesGB.data.model.User
+import com.google.android.gms.tasks.OnCanceledListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -44,6 +45,12 @@ class FirestoreProvider : RemoteDataProvider {
         } catch (error: Throwable) {
             value = NoteResult.Error(error)
         }
+    }
+
+    override fun deleteNote(id: String): LiveData<NoteResult> = MutableLiveData<NoteResult>().apply {
+        getUserNotesCollection().document(id).delete()
+                .addOnSuccessListener { value = NoteResult.Success(null) }
+                .addOnFailureListener { value = NoteResult.Error(it) }
     }
 
     override fun saveNote(note: Note): LiveData<NoteResult> = MutableLiveData<NoteResult>().apply {

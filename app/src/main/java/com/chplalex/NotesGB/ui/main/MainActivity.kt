@@ -15,8 +15,9 @@ import com.chplalex.NotesGB.ui.note.NoteActivity
 import com.chplalex.NotesGB.ui.splash.SplashActivity
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.alert
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
+class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
 
     companion object {
         fun getStartIntent(context: Context) = Intent(context, MainActivity::class.java)
@@ -56,11 +57,15 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
             }
 
     private fun showLogoutDialog() {
-        supportFragmentManager.findFragmentByTag(LogoutDialog.TAG)
-                ?: LogoutDialog.createInstance().show(supportFragmentManager, LogoutDialog.TAG)
+        alert {
+            titleResource = R.string.logout_dialog_title
+            messageResource = R.string.logout_dialog_message
+            positiveButton(R.string.ok_btn_title) { onLogout() }
+            negativeButton(R.string.cancel_btn_title) { dialog -> dialog.dismiss() }
+        }.show()
     }
 
-    override fun onLogout() {
+    fun onLogout() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener {
