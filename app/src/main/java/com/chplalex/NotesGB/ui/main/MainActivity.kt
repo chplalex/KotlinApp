@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProvider
 import com.chplalex.NotesGB.R
 import com.chplalex.NotesGB.data.model.Note
@@ -19,6 +20,9 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
 
     companion object {
         fun getStartIntent(context: Context) = Intent(context, MainActivity::class.java)
+        fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
+            context.startActivity(this)
+        }
     }
 
     override val viewModel: MainViewModel by lazy {

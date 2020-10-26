@@ -15,7 +15,7 @@ private const val RC_SIGN_IN = 458
 abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
     abstract val viewModel: BaseViewModel<T, S>
-    abstract val layoutRes: Int
+    abstract val layoutRes: Int?
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN && resultCode != RESULT_OK) {
@@ -27,7 +27,7 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layoutRes)
+        layoutRes?.let { setContentView(it) }
 
         viewModel.getViewState().observe(this, { t ->
             t?.apply {
@@ -65,7 +65,7 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
     private fun showError(error: String) =
             Snackbar.make(mainRecycler, error, Snackbar.LENGTH_INDEFINITE).apply {
-                setAction(R.string.ok_btn_title, View.OnClickListener { dismiss() })
+                setAction(R.string.ok_btn_title) { dismiss() }
                 show()
             }
 }

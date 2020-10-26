@@ -30,13 +30,13 @@ class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) = holder.bind(notes[position])
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val viewTitle = itemView.findViewById<TextView>(R.id.title)
-        private val viewBody = itemView.findViewById<TextView>(R.id.body)
+        private val txtTitle = itemView.findViewById<TextView>(R.id.txtTitle)
+        private val txtBody = itemView.findViewById<TextView>(R.id.txtBody)
 
         fun bind(note: Note) {
             with(note) {
-                viewTitle.text = title
-                viewBody.text = body
+                txtTitle.text = title
+                txtBody.text = body
                 @Suppress("DEPRECATION") // minSDK for this app is 21
                 itemView.setBackgroundColor(itemView.context.resources.getColor(colorId(color)))
             }
