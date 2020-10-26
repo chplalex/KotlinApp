@@ -2,7 +2,6 @@ package com.chplalex.NotesGB.ui.base
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.chplalex.NotesGB.R
 import com.chplalex.NotesGB.data.errors.NoAuthException

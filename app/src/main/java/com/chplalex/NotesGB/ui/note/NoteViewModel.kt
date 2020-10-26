@@ -14,27 +14,24 @@ class NoteViewModel(val repository: Repository = Repository) : BaseViewModel<Not
     private var pendingNote: Note? = null
     private var noteLiveData: LiveData<NoteResult>? = null
     private val noteObserver = object : Observer<NoteResult> {
-        /**
-         * Called when the data is changed.
-         * @param t  The new data
-         */
         override fun onChanged(t: NoteResult?) {
-            TODO("Доделать отписку от observerForever")
-        }
-
-    }
-
-    fun saveChanges(note: Note) { pendingNote = note }
-
-    override fun onCleared() { pendingNote?.let { repository.saveNote(it) } }
-
-    fun loadNote(id: String) {
-        repository.getNoteById(id).observeForever(Observer<NoteResult> { t ->
-            t ?: return@Observer
+            t ?: return
             when (t) {
                 is Success<*> -> viewStateLiveData.value = NoteViewState(note = t.data as? Note)
                 is Error -> viewStateLiveData.value = NoteViewState(error = t.error)
             }
-        })
+        }
+    }
+
+    fun saveChanges(note: Note) { pendingNote = note }
+
+    override fun onCleared() {
+        pendingNote?.let { repository.saveNote(it) }
+        noteLiveData?.removeObserver(noteObserver)
+    }
+
+    fun loadNote(id: String) {
+        noteLiveData = repository.getNoteById(id)
+        noteLiveData?.observeForever(noteObserver)
     }
 }
