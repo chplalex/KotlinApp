@@ -11,14 +11,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name="com.chplalex.NotesGB.ui.main.MainActivity">
+        <!-- android:theme="@style/SplashTheme"-->
+
+        <activity android:name=".ui.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.chplalex.NotesGB.ui.note.NoteActivity"/>
+        <activity android:name=".ui.main.MainActivity"/>
+
+        <activity android:name=".ui.note.NoteActivity"
+            android:label=""/>
 
     </application>
 
