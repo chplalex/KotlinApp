@@ -1,4 +1,4 @@
-package com.chplalex.NotesGB;
+package com.chplalex.notesgb;
 
 import org.junit.Test;
 

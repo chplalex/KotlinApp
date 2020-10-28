@@ -1,14 +1,13 @@
-package com.chplalex.NotesGB.ui.main
+package com.chplalex.notesgb.ui.main
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.chplalex.NotesGB.R
-import com.chplalex.NotesGB.data.model.Color
-import com.chplalex.NotesGB.data.model.Color.*
-import com.chplalex.NotesGB.data.model.Note
+import com.chplalex.notesgb.R
+import com.chplalex.notesgb.data.model.Color
+import com.chplalex.notesgb.data.model.Color.*
+import com.chplalex.notesgb.data.model.Note
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_note.*
 

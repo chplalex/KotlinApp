@@ -1,4 +1,4 @@
-package com.chplalex.NotesGB.ui.base
+package com.chplalex.notesgb.ui.base
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

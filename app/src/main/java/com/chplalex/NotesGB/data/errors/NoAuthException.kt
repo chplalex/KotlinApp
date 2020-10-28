@@ -1,3 +1,3 @@
-package com.chplalex.NotesGB.data.errors
+package com.chplalex.notesgb.data.errors
 
 class NoAuthException : Throwable()

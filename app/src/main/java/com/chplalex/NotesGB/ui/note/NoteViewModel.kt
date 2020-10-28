@@ -1,23 +1,24 @@
-package com.chplalex.NotesGB.ui.note
+package com.chplalex.notesgb.ui.note
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.chplalex.NotesGB.data.Repository
-import com.chplalex.NotesGB.data.model.Note
-import com.chplalex.NotesGB.data.model.NoteResult
-import com.chplalex.NotesGB.data.model.NoteResult.Success
-import com.chplalex.NotesGB.data.model.NoteResult.Error
-import com.chplalex.NotesGB.ui.base.BaseViewModel
+import com.chplalex.notesgb.data.Repository
+import com.chplalex.notesgb.data.model.Note
+import com.chplalex.notesgb.data.model.NoteResult
+import com.chplalex.notesgb.data.model.NoteResult.Success
+import com.chplalex.notesgb.data.model.NoteResult.Error
+import com.chplalex.notesgb.ui.base.BaseViewModel
 
-class NoteViewModel(val repository: Repository = Repository) : BaseViewModel<Note?, NoteViewState>() {
+class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Data, NoteViewState>() {
 
     private var pendingNote: Note? = null
-    private var noteLiveData: LiveData<NoteResult>? = null
+    private var loadLiveData: LiveData<NoteResult>? = null
+    private var deleteLiveData: LiveData<NoteResult>? = null
     private val noteObserver = object : Observer<NoteResult> {
         override fun onChanged(t: NoteResult?) {
             t ?: return
             when (t) {
-                is Success<*> -> viewStateLiveData.value = NoteViewState(note = t.data as? Note)
+                is Success<*> -> viewStateLiveData.value = NoteViewState(NoteViewState.Data(note = t.data as? Note))
                 is Error -> viewStateLiveData.value = NoteViewState(error = t.error)
             }
         }
@@ -27,12 +28,20 @@ class NoteViewModel(val repository: Repository = Repository) : BaseViewModel<Not
 
     override fun onCleared() {
         pendingNote?.let { repository.saveNote(it) }
-        noteLiveData?.removeObserver(noteObserver)
+        loadLiveData?.removeObserver(noteObserver)
+        deleteLiveData?.removeObserver(noteObserver)
         super.onCleared()
     }
 
     fun loadNote(id: String) {
-        noteLiveData = repository.getNoteById(id)
-        noteLiveData?.observeForever(noteObserver)
+        loadLiveData = repository.getNoteById(id)
+        loadLiveData?.observeForever(noteObserver)
+    }
+
+    fun deleteNote() {
+        pendingNote?.let {
+            deleteLiveData = repository.deleteNote(it.id)
+            deleteLiveData?.observeForever(noteObserver)
+        }
     }
 }

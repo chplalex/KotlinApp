@@ -1,11 +1,11 @@
-package com.chplalex.NotesGB.data.provider
+package com.chplalex.notesgb.data.provider
 
 import androidx.lifecycle.LiveData
-import com.chplalex.NotesGB.data.model.Note
-import com.chplalex.NotesGB.data.model.NoteResult
-import com.chplalex.NotesGB.data.model.User
+import com.chplalex.notesgb.data.model.Note
+import com.chplalex.notesgb.data.model.NoteResult
+import com.chplalex.notesgb.data.model.User
 
-interface RemoteDataProvider {
+interface DataProvider {
     fun getNotes(): LiveData<NoteResult>
     fun getNoteById(id: String): LiveData<NoteResult>
     fun deleteNote(id: String): LiveData<NoteResult>

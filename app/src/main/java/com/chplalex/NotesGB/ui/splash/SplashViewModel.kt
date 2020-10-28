@@ -1,14 +1,13 @@
-package com.chplalex.NotesGB.ui.splash
+package com.chplalex.notesgb.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.chplalex.NotesGB.data.Repository
-import com.chplalex.NotesGB.data.errors.NoAuthException
-import com.chplalex.NotesGB.data.model.User
-import com.chplalex.NotesGB.ui.base.BaseViewModel
+import com.chplalex.notesgb.data.Repository
+import com.chplalex.notesgb.data.errors.NoAuthException
+import com.chplalex.notesgb.data.model.User
+import com.chplalex.notesgb.ui.base.BaseViewModel
 
-class SplashViewModel(private val repository: Repository = Repository) :
-        BaseViewModel<Boolean?, SplashViewState>() {
+class SplashViewModel(private val repository: Repository) : BaseViewModel<Boolean?, SplashViewState>() {
 
     private var splashLiveData: LiveData<User?>? = null
 
