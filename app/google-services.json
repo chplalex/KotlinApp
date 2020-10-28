@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "137313664543-k1h8okdlt926h94tv8lgcrk6kvf4cdu3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chplalex.notesgb",
+            "certificate_hash": "ce44c4a7740be724418c860bb41f6dbf0143d311"
+          }
+        },
+        {
+          "client_id": "137313664543-dbie4j16mcl2j8cb18e8fantb7737oab.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chplalex.notesgb",
+            "certificate_hash": "63d40a5234769f76517068b801fbdc13d1427612"
+          }
+        },
+        {
           "client_id": "137313664543-ptnodhgll3974nt0m4gsse7i59r57it7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

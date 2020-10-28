@@ -1,5 +1,6 @@
 package com.chplalex.notesgb.ui.note
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.chplalex.notesgb.data.Repository
@@ -39,6 +40,7 @@ class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Da
     }
 
     fun deleteNote() {
+        Log.d("TTT", "deleteNote()")
         pendingNote?.let {
             deleteLiveData = repository.deleteNote(it.id)
             deleteLiveData?.observeForever(noteObserver)

@@ -109,15 +109,17 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
     override fun onCreateOptionsMenu(menu: Menu?) =
             menuInflater.inflate(R.menu.menu_note, menu).let { true }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        android.R.id.home -> {
-            saveNoteIntoViewModel.run()
-            onBackPressed()
-            true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                saveNoteIntoViewModel.run()
+                onBackPressed()
+                true
+            }
+            R.id.menu_note_palette -> togglePalette().let { true }
+            R.id.menu_note_delete -> deleteNote().let { true }
+            else -> super.onOptionsItemSelected(item)
         }
-        R.id.menu_note_palette -> togglePalette().let { true }
-        R.id.menu_note_delete -> deleteNote().let { true }
-        else -> super.onOptionsItemSelected(item)
     }
 
     private fun newNote(): Note = Note(UUID.randomUUID().toString(),
@@ -131,10 +133,10 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
                 .setMessage(R.string.delete_note_message)
                 .setPositiveButton(R.string.ok_btn_title) { _, _ -> viewModel.deleteNote() }
                 .setNegativeButton(R.string.cancel_btn_title) { dialog, _ -> dialog.dismiss() }
+                .show()
     }
 
     private fun togglePalette() {
-
     }
 
     override fun renderData(data: NoteViewState.Data) {

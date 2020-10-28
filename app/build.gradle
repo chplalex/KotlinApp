@@ -43,7 +43,7 @@ dependencies {
     //Firebase Firestore
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-firestore-ktx'
-    implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
 
     implementation 'org.koin:koin-android:1.0.1'
     implementation 'org.koin:koin-android-viewmodel:1.0.1'
