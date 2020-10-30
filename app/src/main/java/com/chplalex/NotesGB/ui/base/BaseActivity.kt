@@ -2,13 +2,11 @@ package com.chplalex.notesgb.ui.base
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.chplalex.notesgb.R
 import com.chplalex.notesgb.data.errors.NoAuthException
 import com.firebase.ui.auth.AuthUI
-import com.chplalex.notesgb.extensions.TAG
 
 
 abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
@@ -25,17 +23,8 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
         layoutRes?.let { setContentView(it) }
 
         viewModel.getViewState().observe(this, { t ->
-            Log.d(TAG, "ViewState Listener() t = $t")
-            t ?: return@observe
-
-            t.error?.let {
-                Log.d(TAG, "ViewState Listener() t.error = $it")
-                renderError(it)
-                return@observe
-            }
-
-            Log.d(TAG, "ViewState Listener() t.data = ${t.data}")
-            renderData(t.data)
+            t?.error?.let { renderError(it) }
+            t?.data?.let { renderData(it) }
         })
     }
 
@@ -73,5 +62,4 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
     private fun showError(error: String) =
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-
 }

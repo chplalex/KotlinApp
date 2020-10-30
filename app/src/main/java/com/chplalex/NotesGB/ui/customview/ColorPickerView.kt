@@ -72,7 +72,6 @@ class ColorPickerView : LinearLayout {
 
             addView(view)
         }
-
     }
 
     override fun onAttachedToWindow() {

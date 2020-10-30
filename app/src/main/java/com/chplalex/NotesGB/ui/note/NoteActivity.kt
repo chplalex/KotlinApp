@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -51,7 +50,6 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
         override fun afterTextChanged(s: Editable?): Unit = with(handler) {
-            Log.d(com.chplalex.notesgb.extensions.TAG, "afterTextChanged(), s = $s")
             removeCallbacks(saveNoteIntoViewModel)
             postDelayed(saveNoteIntoViewModel, SAVE_DELAY)
         }
@@ -66,8 +64,6 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
                 ?: newNote()
 
         note?.let { viewModel.saveChanges(it) }
-
-        Log.d(com.chplalex.notesgb.extensions.TAG, "saveNoteIntoViewModel(), title = ${note?.title}; body = ${note?.body}")
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,6 +89,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         note?.let {
             txtNoteTitle.setText(it.title)
             txtNoteBody.setText(it.body)
+            color = it.color
             toolbar.setBackgroundColor(ResourcesCompat.getColor(resources, colorId(it.color), null))
         }
 
@@ -131,12 +128,22 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         AlertDialog.Builder(this)
                 .setTitle(R.string.delete_note_title)
                 .setMessage(R.string.delete_note_message)
-                .setPositiveButton(R.string.ok_btn_title) { _, _ -> viewModel.deleteNote() }
+                .setPositiveButton(R.string.ok_btn_title) { _, _ ->
+                    run {
+                        viewModel.deleteNote()
+                        finish()
+                    }
+                }
                 .setNegativeButton(R.string.cancel_btn_title) { dialog, _ -> dialog.dismiss() }
                 .show()
     }
 
     private fun togglePalette() {
+        if (colorPicker.isOpen) {
+            colorPicker.close()
+        } else {
+            colorPicker.open()
+        }
     }
 
     override fun renderData(data: NoteViewState.Data) {
