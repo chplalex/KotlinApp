@@ -1,4 +1,4 @@
-package com.chplalex.NotesGB.data.model
+package com.chplalex.notesgb.data.model
 
 sealed class NoteResult {
     data class Success<out T>(val data: T) : NoteResult()

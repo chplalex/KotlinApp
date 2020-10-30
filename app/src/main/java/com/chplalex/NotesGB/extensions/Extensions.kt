@@ -1,10 +1,10 @@
-package com.chplalex.NotesGB.extensions
+package com.chplalex.notesgb.extensions
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.chplalex.NotesGB.R
-import com.chplalex.NotesGB.data.model.Color
-import com.chplalex.NotesGB.data.model.Color.*
+import com.chplalex.notesgb.R
+import com.chplalex.notesgb.data.model.Color
+import com.chplalex.notesgb.data.model.Color.*
 import java.text.SimpleDateFormat
 import java.util.*
 

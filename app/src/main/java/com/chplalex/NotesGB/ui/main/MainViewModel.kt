@@ -1,33 +1,33 @@
-package com.chplalex.NotesGB.ui.main
+package com.chplalex.notesgb.ui.main
 
 import androidx.lifecycle.Observer
-import com.chplalex.NotesGB.data.Repository
-import com.chplalex.NotesGB.data.model.Note
-import com.chplalex.NotesGB.data.model.NoteResult
-import com.chplalex.NotesGB.data.model.NoteResult.Success
-import com.chplalex.NotesGB.data.model.NoteResult.Error
-import com.chplalex.NotesGB.ui.base.BaseViewModel
+import com.chplalex.notesgb.data.Repository
+import com.chplalex.notesgb.data.model.Note
+import com.chplalex.notesgb.data.model.NoteResult
+import com.chplalex.notesgb.data.model.NoteResult.Success
+import com.chplalex.notesgb.data.model.NoteResult.Error
+import com.chplalex.notesgb.ui.base.BaseViewModel
 
-@Suppress("UNCHECKED_CAST")
-class MainViewModel(private val repository: Repository = Repository) : BaseViewModel<List<Note>?, MainViewState>() {
-
-    private val repositoryNotes = repository.getNotes()
+class MainViewModel(val repository: Repository) : BaseViewModel<List<Note>?, MainViewState>() {
 
     private val notesObserver = Observer<NoteResult> { t ->
-        val noteResult = t ?: return@Observer
+        t ?: return@Observer
 
+        @Suppress("UNCHECKED_CAST")
         when (t) {
             is Success<*> -> viewStateLiveData.value = MainViewState(notes = t.data as? List<Note>)
             is Error -> viewStateLiveData.value = MainViewState(error = t.error)
         }
     }
 
+    private val repositoryNotes = repository.getNotes()
+
     init {
-        viewStateLiveData.value = MainViewState()
         repositoryNotes.observeForever(notesObserver)
     }
 
     override fun onCleared() {
         repositoryNotes.removeObserver(notesObserver)
+        super.onCleared()
     }
 }

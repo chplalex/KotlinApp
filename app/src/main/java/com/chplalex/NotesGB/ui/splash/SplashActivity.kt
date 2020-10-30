@@ -1,31 +1,36 @@
-package com.chplalex.NotesGB.ui.splash
+package com.chplalex.notesgb.ui.splash
 
-import android.os.Handler
-import androidx.lifecycle.ViewModelProvider
-import com.chplalex.NotesGB.R
-import com.chplalex.NotesGB.ui.base.BaseActivity
-import com.chplalex.NotesGB.ui.base.BaseViewModel
-import com.chplalex.NotesGB.ui.main.MainActivity
-
-private const val START_DELAY = 1000L
+import android.content.Context
+import android.content.Intent
+import com.chplalex.notesgb.ui.base.BaseActivity
+import com.chplalex.notesgb.ui.main.MainActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
 
-    override val viewModel by lazy {
-        ViewModelProvider(this).get(SplashViewModel::class.java)
-    }
-
-    override val layoutRes: Int? = null
-
-    override fun renderData(data: Boolean?) {
-        data?.takeIf { it }.let {
-            MainActivity.start(this)
-            finish()
+    companion object {
+        fun start(context: Context) = Intent(context, SplashActivity::class.java).apply {
+            context.startActivity(this)
         }
     }
+
+    override val viewModel: SplashViewModel by viewModel()
+    override val layoutRes: Int? = null
 
     override fun onResume() {
         super.onResume()
         viewModel.requestUser()
     }
+
+    override fun renderData(data: Boolean?) {
+        data?.takeIf { it }?.let {
+            startMainActivity()
+        }
+    }
+
+    private fun startMainActivity() {
+        MainActivity.start(this)
+        finish()
+    }
 }
+

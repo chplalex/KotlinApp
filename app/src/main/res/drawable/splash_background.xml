@@ -5,6 +5,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_android_robot"/>
+            android:src="@drawable/android_robot"/>
     </item>
 </layer-list>
