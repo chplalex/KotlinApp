@@ -7,4 +7,10 @@
     <string name="hint_note_body">Введите текст заметки</string>
     <string name="fab_content_description">Создать новую заметку</string>
     <string name="ok_btn_title">Понятно</string>
+    <string name="menu_logout">Logout</string>
+
+    <string name="logout_dialog_title">Выйти из аккаунта?</string>
+    <string name="logout_dialog_message">Все заметки будут сохранены. Вы получите к ним доступ после авторизации.</string>
+    <string name="logout_dialog_cancel">Отмена</string>
+
 </resources>

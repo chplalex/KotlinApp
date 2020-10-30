@@ -18,7 +18,7 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/title"
+            android:id="@+id/txtTitle"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             tools:text="@string/tool_note_title"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/body"
+            android:id="@+id/txtBody"
             style="@style/TextAppearance.AppCompat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

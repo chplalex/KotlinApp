@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.chplalex.NotesGB.R
 import com.chplalex.NotesGB.data.model.Color
 import com.chplalex.NotesGB.data.model.Note
+import com.chplalex.NotesGB.extensions.format
+import com.chplalex.NotesGB.extensions.getColorInt
 import com.chplalex.NotesGB.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
 import java.util.*
@@ -80,11 +82,11 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         txtNoteBody.addTextChangedListener(textChangeListener)
     }
 
-    private fun initView() = note?.let {
-        txtNoteTitle.setText(it.title)
-        txtNoteBody.setText(it.body)
-        @Suppress("DEPRECATION")
-        toolbar.setBackgroundColor(resources.getColor(colorId(it.color)))
+    private fun initView() = note?.run {
+        supportActionBar?.title = lastChanged.format()
+        txtNoteTitle.setText(title)
+        txtNoteBody.setText(body)
+        toolbar.setBackgroundColor(color.getColorInt(this@NoteActivity))
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -105,14 +107,3 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         initView()
     }
 }
-
-private fun colorId(color: Color) = when (color) {
-    Color.WHITE -> R.color.color_white
-    Color.YELLOW -> R.color.color_yellow
-    Color.GREEN -> R.color.color_green
-    Color.BLUE -> R.color.color_blue
-    Color.RED -> R.color.color_red
-    Color.VIOLET -> R.color.color_violet
-    Color.PINK -> R.color.color_pink
-}
-
