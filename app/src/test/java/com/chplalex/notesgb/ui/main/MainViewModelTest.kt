@@ -35,7 +35,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `error in - error it - should return error`() {
+    fun `load error - should return error`() {
         val testData = Throwable("error")
         var testResult: Throwable? = null
         viewModel.getViewState().observeForever { testResult = it?.error }
@@ -44,7 +44,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `data in - data out - should return notes`() {
+    fun `load notes - should return notes`() {
         val testData = listOf(Note("1"), Note("2"), Note("3"))
         var testResult: List<Note>? = null
         viewModel.getViewState().observeForever { testResult = it?.data }

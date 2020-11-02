@@ -26,10 +26,8 @@ class NoteViewModelTest {
     @Before
     fun setUp() {
         every { mockRepository.getNoteById(any()) } returns noteLiveData
-        every { mockRepository.deleteNote(any()) } returns noteLiveData
         noteViewModel = NoteViewModel(mockRepository)
         noteViewModel.loadNote("1")
-        noteViewModel.deleteNote()
     }
 
     @Test
@@ -37,13 +35,8 @@ class NoteViewModelTest {
         verify(exactly = 1) { mockRepository.getNoteById(any()) }
     }
 
-//    @Test TODO: непонятно почему pendingNote == null
-//    fun `should request deleteNote() once`() {
-//        verify(exactly = 1) { mockRepository.deleteNote(any()) }
-//    }
-
     @Test
-    fun `noteLiveData error in - error it - should return error`() {
+    fun `load error - should return error`() {
         val testData = Throwable("error")
         var testResult: Throwable? = null
         noteViewModel.getViewState().observeForever { testResult = it?.error }
@@ -52,7 +45,7 @@ class NoteViewModelTest {
     }
 
     @Test
-    fun `load data - should return note`() {
+    fun `load note - should return note`() {
         val testData = Note("1")
         var testResult: Note? = null
         noteViewModel.getViewState().observeForever { testResult = it?.data?.note }
@@ -65,13 +58,5 @@ class NoteViewModelTest {
         noteViewModel.onCleared()
         assertFalse(noteLiveData.hasObservers())
     }
-
-//    @Test TODO: Разобраться, почему не вызывается noteObserver при вызове loadNote
-//    fun once() {
-//        noteViewModel.deleteNote()
-//        verify(exactly = 1) { mockRepository.deleteNote(any()) }
-//    }
-
-
 
 }
