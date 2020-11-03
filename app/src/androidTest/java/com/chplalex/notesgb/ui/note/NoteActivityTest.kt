@@ -54,7 +54,6 @@ class NoteActivityTest {
             putExtra(NOTE_KEY, testNote.id)
             noteActivityTestRule.launchActivity(this)
         }
-
     }
 
     @After
