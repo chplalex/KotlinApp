@@ -1,3 +1,3 @@
-package com.chplalex.NotesGB.data.model
+package com.chplalex.notesgb.data.model
 
 class User(val name: String, val email: String)

@@ -1,16 +1,13 @@
-package com.chplalex.NotesGB.data
+package com.chplalex.notesgb.data
 
-import com.chplalex.NotesGB.data.model.Note
-import com.chplalex.NotesGB.data.provider.FirestoreProvider
-import com.chplalex.NotesGB.data.provider.RemoteDataProvider
+import com.chplalex.notesgb.data.model.Note
+import com.chplalex.notesgb.data.provider.DataProvider
 
-object Repository {
-
-    private val remoteDataProvider: RemoteDataProvider = FirestoreProvider()
-
-    fun getNotes() = remoteDataProvider.getNotes()
-    fun saveNote(note: Note) = remoteDataProvider.saveNote(note)
-    fun getNoteById(id: String) = remoteDataProvider.getNoteById(id)
-    fun getCurrentUser()= remoteDataProvider.getCurrentUser()
+class Repository(val dataProvider: DataProvider) {
+    fun getNotes() = dataProvider.getNotes()
+    fun deleteNote(id: String) = dataProvider.deleteNote(id)
+    fun saveNote(note: Note) = dataProvider.saveNote(note)
+    fun getNoteById(id: String) = dataProvider.getNoteById(id)
+    fun getCurrentUser()= dataProvider.getCurrentUser()
 
 }

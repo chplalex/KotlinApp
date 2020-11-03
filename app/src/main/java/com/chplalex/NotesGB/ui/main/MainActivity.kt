@@ -1,4 +1,4 @@
-package com.chplalex.NotesGB.ui.main
+package com.chplalex.notesgb.ui.main
 
 import android.content.Context
 import android.content.Intent
@@ -6,28 +6,26 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import androidx.core.content.ContextCompat.startActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
-import com.chplalex.NotesGB.R
-import com.chplalex.NotesGB.data.model.Note
-import com.chplalex.NotesGB.ui.base.BaseActivity
-import com.chplalex.NotesGB.ui.note.NoteActivity
-import com.chplalex.NotesGB.ui.splash.SplashActivity
+import com.chplalex.notesgb.R
+import com.chplalex.notesgb.data.model.Note
+import com.chplalex.notesgb.ui.base.BaseActivity
+import com.chplalex.notesgb.ui.note.NoteActivity
+import com.chplalex.notesgb.ui.splash.SplashActivity
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
+class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
 
     companion object {
-        fun getStartIntent(context: Context) = Intent(context, MainActivity::class.java)
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
             context.startActivity(this)
         }
     }
 
-    override val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
+    override val viewModel: MainViewModel by viewModel()
     override val layoutRes: Int = R.layout.activity_main
     private lateinit var adapter: MainAdapter
 
@@ -56,15 +54,19 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
             }
 
     private fun showLogoutDialog() {
-        supportFragmentManager.findFragmentByTag(LogoutDialog.TAG)
-                ?: LogoutDialog.createInstance().show(supportFragmentManager, LogoutDialog.TAG)
+        AlertDialog.Builder(this)
+                .setTitle(R.string.logout_dialog_title)
+                .setMessage(R.string.logout_dialog_message)
+                .setPositiveButton(R.string.ok_btn_title) { _, _ -> onLogout() }
+                .setNegativeButton(R.string.cancel_btn_title) { dialog, _ -> dialog.dismiss() }
+                .show()
     }
 
-    override fun onLogout() {
+    fun onLogout() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener {
-                    startActivity(Intent(this, SplashActivity::class.java))
+                    SplashActivity.start(this)
                     finish()
                 }
     }
