@@ -108,7 +108,7 @@ class NoteActivityTest {
         verify(timeout = SAVE_DELAY) { viewModel.saveChanges(any()) }
     }
 
-    @Test //TODO: не проходит и не понятно почему
+    @Test
     fun should_call_deleteNote() {
         openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().context)
         onView(withText(R.string.note_delete)).perform(click())
