@@ -13,7 +13,7 @@ import com.chplalex.notesgb.ui.base.BaseViewModel
 class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Data, NoteViewState>() {
 
     init {
-        viewStateLiveData.value = NoteViewState()
+        viewStateLiveData.postValue(NoteViewState())
     }
 
     private var pendingNote: Note? = null
@@ -67,5 +67,6 @@ class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Da
             deleteLiveData = repository.deleteNote(it.id)
             deleteLiveData?.observeForever(deleteObserver)
         }
+        pendingNote = null
     }
 }

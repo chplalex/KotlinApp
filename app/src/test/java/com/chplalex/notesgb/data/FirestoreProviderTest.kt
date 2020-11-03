@@ -5,6 +5,7 @@ import com.chplalex.notesgb.data.errors.NoAuthException
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.data.model.NoteResult
 import com.chplalex.notesgb.data.provider.FirestoreProvider
+import com.firebase.ui.auth.data.model.User
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -49,9 +50,8 @@ class FirestoreProviderTest {
 
     }
 
-
     @Test
-    fun `should throw if no auth`() {
+    fun `if no auth should throw`() {
         var result: Any? = null
         every { mockAuth.currentUser } returns null
         provider.getNotes().observeForever {
@@ -60,44 +60,44 @@ class FirestoreProviderTest {
         assertTrue(result is NoAuthException)
     }
 
-
     @Test
-    fun `subscribeAllNotes return notes`() {
-        var result: List<Note>? = null
+    fun `when db don't return error getNotes() should return notes`() {
+        var resultNotes: List<Note>? = null
         val slot = slot<EventListener<QuerySnapshot>>()
         val mockSnapshot = mockk<QuerySnapshot>()
 
-        every { mockSnapshot.documents } returns
-                listOf(mockDocument1, mockDocument2, mockDocument3)
+        every { mockSnapshot.documents } returns listOf(mockDocument1, mockDocument2, mockDocument3)
         every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
 
         provider.getNotes().observeForever {
-            result = (it as? NoteResult.Success<List<Note>>)?.data
+            resultNotes = (it as NoteResult.Success<List<Note>>).data
         }
 
         slot.captured.onEvent(mockSnapshot, null)
 
-        assertEquals(testNotes, result)
+        assertEquals(testNotes, resultNotes)
     }
 
-//    @Test TODO: не работает. Непонятно почему
-//    fun `getNotes should return error`() {
-//        var result: Throwable? = null
-//        val testError = mockk<FirebaseFirestoreException>()
-//        val slot = slot<EventListener<QuerySnapshot>>()
-//        every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
-//
-//        provider.getNotes().observeForever {
-//            result = (it as NoteResult.Error).error
-//        }
-//        slot.captured.onEvent(null, testError)
-//        assertEquals(testError, result)
-//    }
+    @Test // TODO: не работает. Непонятно почему
+    fun `when db returns error getNotes should return error`() {
+        val testData = mockk<FirebaseFirestoreException>()
+        var testResult: Throwable? = null
+        val slot = slot<EventListener<QuerySnapshot>>()
 
+        every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
+
+        provider.getNotes().observeForever {
+            testResult = (it as NoteResult.Error).error
+        }
+
+        slot.captured.onEvent(null, testData)
+
+        assertEquals(testData, testResult)
+    }
 
     @Test
-    fun `saveNote calls document set`() {
-        val mockDocumentReference: DocumentReference = mockk()
+    fun `saveNote calls document set once`() {
+        val mockDocumentReference = mockk<DocumentReference>()
         every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
         provider.saveNote(testNotes[0])
         verify(exactly = 1) { mockDocumentReference.set(testNotes[0]) }
@@ -105,24 +105,21 @@ class FirestoreProviderTest {
 
     @Test
     fun `saveNote return Note`() {
-        val mockDocumentReference: DocumentReference = mockk()
+        val testData = testNotes[0]
+        var testResult: Note? = null
+        val mockDocumentReference = mockk<DocumentReference>()
         val slot = slot<OnSuccessListener<in Void>>()
-        var result: Note? = null
 
-        every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
-        every {
-            mockDocumentReference.set(testNotes[0]).addOnSuccessListener(capture(slot))
-        } returns mockk()
+        every { mockCollection.document(testData.id) } returns mockDocumentReference
+        every { mockDocumentReference.set(testData).addOnSuccessListener(capture(slot)) } returns mockk()
 
         provider.saveNote(testNotes[0]).observeForever {
-            result = (it as? NoteResult.Success<Note>)?.data
+            testResult = (it as? NoteResult.Success<Note>)?.data
         }
+
         slot.captured.onSuccess(null)
 
-        assertNotNull(result)
-        assertEquals(testNotes[0], result)
+        assertNotNull(testResult)
+        assertEquals(testData, testResult)
     }
-
-
-
 }

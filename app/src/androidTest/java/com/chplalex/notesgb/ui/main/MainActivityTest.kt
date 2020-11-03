@@ -58,8 +58,8 @@ class MainActivityTest {
 
     @Test
     fun check_data_is_displayed(){
-        //onView(withId(R.id.mainRecycler)).perform(RecyclerViewActions.scrollToPosition<MainAdapter.NoteViewHolder>(1))
-        //onView(withText(testNotes[1].body)).check(matches(isDisplayed()))
+        onView(withId(R.id.mainRecycler)).perform(RecyclerViewActions.scrollToPosition<MainAdapter.NoteViewHolder>(1))
+        onView(withText(testNotes[1].body)).check(matches(isDisplayed()))
     }
 
 }

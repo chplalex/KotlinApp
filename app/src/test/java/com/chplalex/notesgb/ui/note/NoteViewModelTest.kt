@@ -37,7 +37,7 @@ class NoteViewModelTest {
 
     @Test
     fun `load error - should return error`() {
-        val testData = Throwable("error")
+        val testData = Throwable("any error")
         var testResult: Throwable? = null
         noteViewModel.getViewState().observeForever { testResult = it?.error }
         noteLiveData.value = NoteResult.Error(testData)

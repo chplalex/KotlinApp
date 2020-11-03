@@ -8,6 +8,7 @@ import com.chplalex.notesgb.data.model.NoteResult
 import com.chplalex.notesgb.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 
 class FirestoreProvider(val store: FirebaseFirestore, val auth: FirebaseAuth) : DataProvider {
@@ -29,9 +30,9 @@ class FirestoreProvider(val store: FirebaseFirestore, val auth: FirebaseAuth) : 
 
     override fun getNotes(): LiveData<NoteResult> = MutableLiveData<NoteResult>().apply {
         try {
-            notesReference.addSnapshotListener { snapshot, error ->
+            notesReference.orderBy("lastChanged", Query.Direction.DESCENDING).addSnapshotListener { snapshot, error ->
                 value = error?.let {
-                    throw it
+                    NoteResult.Error(it)
                 } ?: snapshot?.let {
                     val notes = it.documents.map { it.toObject(Note::class.java) }
                     NoteResult.Success(notes)

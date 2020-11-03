@@ -21,7 +21,7 @@ class SplashViewModel(private val repository: Repository) : BaseViewModel<Boolea
         splashLiveData?.observeForever(splashObserver)
     }
 
-    override fun onCleared() {
+    public override fun onCleared() {
         splashLiveData?.removeObserver(splashObserver)
         super.onCleared()
     }

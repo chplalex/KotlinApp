@@ -40,7 +40,7 @@ class SplashViewModelTest {
         var testResult: Throwable? = null
         splashViewModel.getViewState().observeForever { testResult = it?.error }
         splashLiveData.value = null
-        Assert.assertEquals(testData.toString(), testResult.toString())
+        Assert.assertEquals(testData, testResult)
     }
 
     @Test
