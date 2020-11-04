@@ -2,17 +2,13 @@ package com.chplalex.notesgb.ui.note
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
-import androidx.test.InstrumentationRegistry.getTargetContext
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import com.chplalex.notesgb.R
 import com.chplalex.notesgb.common.getColorInt
@@ -63,19 +59,24 @@ class NoteActivityTest {
 
     @Test
     fun should_show_color_picker() {
-        onView(withId(R.id.menu_note_palette)).perform(click())
+        openActionBarOverflowOrOptionsMenu(noteActivityTestRule.activity)
+        onView(withText(R.string.note_palette)).perform(click())  //не работает матчер withId
         onView(withId(R.id.colorPicker)).check(matches(isCompletelyDisplayed()))
     }
 
     @Test
     fun should_hide_color_picker() {
-        onView(withId(R.id.menu_note_palette)).perform(click()).perform(click())
+        openActionBarOverflowOrOptionsMenu(noteActivityTestRule.activity)
+        onView(withText(R.string.note_palette)).perform(click())  //не работает матчер withId
+        openActionBarOverflowOrOptionsMenu(noteActivityTestRule.activity)
+        onView(withText(R.string.note_palette)).perform(click())  //не работает матчер withId
         onView(withId(R.id.colorPicker)).check(matches(not(isDisplayed())))
     }
 
     @Test
     fun should_set_toolbar_color() {
-        onView(withId(R.id.menu_note_palette)).perform(click())
+        openActionBarOverflowOrOptionsMenu(noteActivityTestRule.activity)
+        onView(withText(R.string.note_palette)).perform(click())  //не работает матчер withId
         onView(withTagValue(`is`(Color.BLUE))).perform(click())
 
         val colorInt = Color.BLUE.getColorInt(noteActivityTestRule.activity)
@@ -99,7 +100,6 @@ class NoteActivityTest {
         onView(withId(R.id.txtNoteTitle)).check(matches(withText(testNote.title)))
         onView(withId(R.id.txtNoteBody)).check(matches(withText(testNote.body)))
     }
-
 
     @Test
     fun should_call_saveNote() {

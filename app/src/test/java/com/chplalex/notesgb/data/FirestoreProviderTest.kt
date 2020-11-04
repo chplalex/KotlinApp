@@ -70,7 +70,7 @@ class FirestoreProviderTest {
         every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
 
         provider.getNotes().observeForever {
-            resultNotes = (it as NoteResult.Success<List<Note>>).data
+            resultNotes = (it as NoteResult.Success<List<Note>>)?.data
         }
 
         slot.captured.onEvent(mockSnapshot, null)

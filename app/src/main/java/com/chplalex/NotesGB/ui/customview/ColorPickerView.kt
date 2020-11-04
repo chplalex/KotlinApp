@@ -8,9 +8,9 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.annotation.Dimension
 import androidx.annotation.Dimension.DP
-import com.chplalex.notesgb.R
 import com.chplalex.notesgb.data.model.Color
 import com.chplalex.notesgb.common.dip
+import com.chplalex.notesgb.common.getColorRes
 
 class ColorPickerView : LinearLayout {
 
@@ -18,7 +18,8 @@ class ColorPickerView : LinearLayout {
         private const val PALETTE_ANIMATION_DURATION = 150L
         private const val HEIGHT = "height"
         private const val SCALE = "scale"
-        @Dimension(unit = DP) private const val COLOR_VIEW_PADDING = 8
+        @Dimension(unit = DP)
+        private const val COLOR_VIEW_PADDING = 8
     }
 
     var onColorClickListener: (color: Color) -> Unit = { }
@@ -62,7 +63,7 @@ class ColorPickerView : LinearLayout {
 
         Color.values().forEach { color ->
             val view =  ColorCircleView(context).apply {
-                fillColorRes = colorId(color)
+                fillColorRes = color.getColorRes()
                 tag = color
                 dip(COLOR_VIEW_PADDING).let {
                     setPadding(it, it, it, it)
@@ -102,15 +103,4 @@ class ColorPickerView : LinearLayout {
         )
         animator.start()
     }
-}
-
-// TODO: переделать на функцию-расширение класса Color
-private fun colorId(color: Color) = when (color) {
-    Color.WHITE -> R.color.color_white
-    Color.YELLOW -> R.color.color_yellow
-    Color.GREEN -> R.color.color_green
-    Color.BLUE -> R.color.color_blue
-    Color.RED -> R.color.color_red
-    Color.VIOLET -> R.color.color_violet
-    Color.PINK -> R.color.color_pink
 }
