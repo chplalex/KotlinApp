@@ -5,8 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.chplalex.notesgb.R
-import com.chplalex.notesgb.data.model.Color
-import com.chplalex.notesgb.data.model.Color.*
+import com.chplalex.notesgb.common.getColorInt
 import com.chplalex.notesgb.data.model.Note
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_note.*
@@ -37,22 +36,8 @@ class MainAdapter(private val onClickListener: ((Note) -> Unit)? = null) :
         fun bind(note: Note) = with(note) {
             txtTitle.text = title
             txtBody.text = body
-            @Suppress("DEPRECATION")
-            itemView.setBackgroundColor(itemView.context.resources.getColor(colorId(color)))
+            itemView.setBackgroundColor(color.getColorInt(containerView.context))
             itemView.setOnClickListener { onClickListener?.invoke(this) }
         }
     }
 }
-
-// TODO: переделать на функцию-расширение класса Color
-private fun colorId(color: Color) = when (color) {
-    WHITE -> R.color.color_white
-    YELLOW -> R.color.color_yellow
-    GREEN -> R.color.color_green
-    BLUE -> R.color.color_blue
-    RED -> R.color.color_red
-    VIOLET -> R.color.color_violet
-    PINK -> R.color.color_pink
-}
-
-

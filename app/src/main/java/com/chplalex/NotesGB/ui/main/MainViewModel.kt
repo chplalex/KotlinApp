@@ -1,5 +1,6 @@
 package com.chplalex.notesgb.ui.main
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer
 import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.model.Note
@@ -26,7 +27,8 @@ class MainViewModel(val repository: Repository) : BaseViewModel<List<Note>?, Mai
         repositoryNotes.observeForever(notesObserver)
     }
 
-    override fun onCleared() {
+    @VisibleForTesting
+    public override fun onCleared() {
         repositoryNotes.removeObserver(notesObserver)
         super.onCleared()
     }

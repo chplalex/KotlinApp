@@ -1,5 +1,6 @@
 package com.chplalex.notesgb.ui.note
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.chplalex.notesgb.data.Repository
@@ -12,7 +13,7 @@ import com.chplalex.notesgb.ui.base.BaseViewModel
 class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Data, NoteViewState>() {
 
     init {
-        viewStateLiveData.value = NoteViewState()
+        viewStateLiveData.postValue(NoteViewState())
     }
 
     private var pendingNote: Note? = null
@@ -48,7 +49,8 @@ class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Da
         pendingNote = note
     }
 
-    override fun onCleared() {
+    @VisibleForTesting
+    public override fun onCleared() {
         pendingNote?.let { repository.saveNote(it) }
         loadLiveData?.removeObserver(noteObserver)
         deleteLiveData?.removeObserver(deleteObserver)
@@ -63,7 +65,8 @@ class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Da
     fun deleteNote() {
         pendingNote?.let {
             deleteLiveData = repository.deleteNote(it.id)
-            deleteLiveData?.observeForever(noteObserver)
+            deleteLiveData?.observeForever(deleteObserver)
         }
+        pendingNote = null
     }
 }

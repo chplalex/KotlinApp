@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import com.chplalex.notesgb.R
@@ -62,6 +63,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
                 .show()
     }
 
+    @VisibleForTesting
     fun onLogout() {
         AuthUI.getInstance()
                 .signOut(this)

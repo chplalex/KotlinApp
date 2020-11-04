@@ -10,24 +10,23 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import com.chplalex.notesgb.R
-import com.chplalex.notesgb.data.model.Color
 import com.chplalex.notesgb.data.model.Color.*
 import com.chplalex.notesgb.data.model.Note
-import com.chplalex.notesgb.extensions.DATE_TIME_FORMAT
-import com.chplalex.notesgb.extensions.getColorInt
+import com.chplalex.notesgb.common.DATE_TIME_FORMAT
+import com.chplalex.notesgb.common.getColorInt
 import com.chplalex.notesgb.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val SAVE_DELAY = 2000L
+const val SAVE_DELAY = 2000L
 
 class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
 
     companion object {
 
-        private val NOTE_KEY = Note::class.java.name
+        val NOTE_KEY = NoteActivity::class.java.name
 
         fun start(context: Context, id: String? = null) =
                 Intent(context, NoteActivity::class.java).apply {
@@ -90,7 +89,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
             txtNoteTitle.setText(it.title)
             txtNoteBody.setText(it.body)
             color = it.color
-            toolbar.setBackgroundColor(ResourcesCompat.getColor(resources, colorId(it.color), null))
+            toolbar.setBackgroundColor(it.color.getColorInt(this))
         }
 
         colorPicker.onColorClickListener = {
@@ -156,15 +155,4 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
 
         initView()
     }
-}
-
-// TODO: переделать на функцию-расширение класса Color
-private fun colorId(color: Color) = when (color) {
-    WHITE -> R.color.color_white
-    YELLOW -> R.color.color_yellow
-    GREEN -> R.color.color_green
-    BLUE -> R.color.color_blue
-    RED -> R.color.color_red
-    VIOLET -> R.color.color_violet
-    PINK -> R.color.color_pink
 }
