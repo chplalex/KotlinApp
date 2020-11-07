@@ -1,35 +1,27 @@
 package com.chplalex.notesgb.ui.main
 
-import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.Observer
 import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.data.model.NoteResult
 import com.chplalex.notesgb.data.model.NoteResult.Success
 import com.chplalex.notesgb.data.model.NoteResult.Error
 import com.chplalex.notesgb.ui.base.BaseViewModel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
 
-class MainViewModel(val repository: Repository) : BaseViewModel<List<Note>?, MainViewState>() {
+class MainViewModel(val repository: Repository) : BaseViewModel<List<Note>?>() {
 
-    private val notesObserver = Observer<NoteResult> { t ->
-        t ?: return@Observer
+    private val notesChannel = repository.getNotes()
 
-        @Suppress("UNCHECKED_CAST")
-        when (t) {
-            is Success<*> -> viewStateLiveData.value = MainViewState(notes = t.data as? List<Note>)
-            is Error -> viewStateLiveData.value = MainViewState(error = t.error)
+    init {
+        launch {
+            notesChannel.consumeEach {
+                when (it) {
+                    is Success<*> -> setData(it.data as List<Note>)
+                    is Error -> setError(it.error)
+                }
+            }
         }
     }
 
-    private val repositoryNotes = repository.getNotes()
-
-    init {
-        repositoryNotes.observeForever(notesObserver)
-    }
-
-    @VisibleForTesting
-    public override fun onCleared() {
-        repositoryNotes.removeObserver(notesObserver)
-        super.onCleared()
-    }
 }

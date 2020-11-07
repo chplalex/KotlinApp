@@ -6,7 +6,7 @@ import com.chplalex.notesgb.ui.base.BaseActivity
 import com.chplalex.notesgb.ui.main.MainActivity
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
+class SplashActivity : BaseActivity<Boolean>() {
 
     companion object {
         fun start(context: Context) = Intent(context, SplashActivity::class.java).apply {
@@ -22,7 +22,7 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         viewModel.requestUser()
     }
 
-    override fun renderData(data: Boolean?) {
+    override fun renderData(data: Boolean) {
         data?.takeIf { it }?.let {
             startMainActivity()
         }
@@ -32,5 +32,6 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         MainActivity.start(this)
         finish()
     }
+
 }
 

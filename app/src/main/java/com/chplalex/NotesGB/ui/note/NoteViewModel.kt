@@ -9,64 +9,41 @@ import com.chplalex.notesgb.data.model.NoteResult
 import com.chplalex.notesgb.data.model.NoteResult.Success
 import com.chplalex.notesgb.data.model.NoteResult.Error
 import com.chplalex.notesgb.ui.base.BaseViewModel
+import com.chplalex.ui.note.NoteData
+import kotlinx.coroutines.launch
 
-class NoteViewModel(val repository: Repository) : BaseViewModel<NoteViewState.Data, NoteViewState>() {
+class NoteViewModel(val repository: Repository) : BaseViewModel<NoteData>() {
 
-    init {
-        viewStateLiveData.postValue(NoteViewState())
-    }
-
-    private var pendingNote: Note? = null
-    private var loadLiveData: LiveData<NoteResult>? = null
-    private var deleteLiveData: LiveData<NoteResult>? = null
-
-    private val noteObserver = object : Observer<NoteResult> {
-
-        override fun onChanged(t: NoteResult?) {
-            t ?: return
-            when (t) {
-                is Success<*> -> {
-                    pendingNote = t.data as? Note
-                    viewStateLiveData.value = NoteViewState(NoteViewState.Data(note = pendingNote))
-                }
-                is Error -> viewStateLiveData.value = NoteViewState(error = t.error)
-            }
-            loadLiveData?.removeObserver(this)
-        }
-    }
-
-    private val deleteObserver = object : Observer<NoteResult> {
-        override fun onChanged(result: NoteResult?) {
-            when (result) {
-                is Success<*> -> { viewStateLiveData.value = NoteViewState(NoteViewState.Data(isDeleted = true)) }
-                is Error -> viewStateLiveData.value = NoteViewState(error = result.error)
-            }
-            deleteLiveData?.removeObserver(this)
-        }
-    }
+    private val currentNote: Note?
+        get() = getViewState().poll()?.note
 
     fun saveChanges(note: Note) {
-        pendingNote = note
+        setData(NoteData(note = note))
+    }
+
+    fun loadNote(id: String) = launch {
+        try {
+           repository.getNoteById(id).let { setData(NoteData(note = it)) }
+        } catch (error: Throwable) {
+            setError(error)
+        }
+    }
+
+    fun deleteNote() = launch {
+        try {
+            currentNote?.let { repository.deleteNote(it.id) }
+            setData(NoteData(isDeleted = true))
+        } catch (error: Throwable) {
+            setError(error)
+        }
     }
 
     @VisibleForTesting
     public override fun onCleared() {
-        pendingNote?.let { repository.saveNote(it) }
-        loadLiveData?.removeObserver(noteObserver)
-        deleteLiveData?.removeObserver(deleteObserver)
-        super.onCleared()
-    }
-
-    fun loadNote(id: String) {
-        loadLiveData = repository.getNoteById(id)
-        loadLiveData?.observeForever(noteObserver)
-    }
-
-    fun deleteNote() {
-        pendingNote?.let {
-            deleteLiveData = repository.deleteNote(it.id)
-            deleteLiveData?.observeForever(deleteObserver)
+        launch {
+            currentNote?.let { repository.saveNote(it) }
+            super.onCleared()
         }
-        pendingNote = null
     }
+
 }

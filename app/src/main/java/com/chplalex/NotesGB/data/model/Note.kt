@@ -2,6 +2,7 @@ package com.chplalex.notesgb.data.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.item_note.*
 import java.util.*
 
 @Parcelize

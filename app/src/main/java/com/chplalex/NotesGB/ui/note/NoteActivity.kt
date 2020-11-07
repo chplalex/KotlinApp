@@ -8,21 +8,23 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.res.ResourcesCompat
 import com.chplalex.notesgb.R
 import com.chplalex.notesgb.data.model.Color.*
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.common.DATE_TIME_FORMAT
 import com.chplalex.notesgb.common.getColorInt
 import com.chplalex.notesgb.ui.base.BaseActivity
+import com.chplalex.ui.note.NoteData
 import kotlinx.android.synthetic.main.activity_note.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 const val SAVE_DELAY = 2000L
 
-class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
+class NoteActivity : BaseActivity<NoteData>() {
 
     companion object {
 
@@ -48,13 +50,18 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-        override fun afterTextChanged(s: Editable?): Unit = with(handler) {
-            removeCallbacks(saveNoteIntoViewModel)
-            postDelayed(saveNoteIntoViewModel, SAVE_DELAY)
+        override fun afterTextChanged(s: Editable?) {
+            if (txtNoteTitle.text == null ||
+                    (txtNoteTitle.text!!.length < 3 && txtNoteBody.text.length < 3)) return
+
+            launch {
+                delay(SAVE_DELAY)
+                saveNoteIntoViewModel()
+            }
         }
     }
 
-    private val saveNoteIntoViewModel = Runnable(function = {
+    private fun saveNoteIntoViewModel() {
         note = note?.copy(
                 title = txtNoteTitle.text.toString(),
                 body = txtNoteBody.text.toString(),
@@ -63,7 +70,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
                 ?: newNote()
 
         note?.let { viewModel.saveChanges(it) }
-    })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +102,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         colorPicker.onColorClickListener = {
             toolbar.setBackgroundColor(it.getColorInt(this))
             color = it
-            saveNoteIntoViewModel.run()
+            saveNoteIntoViewModel()
         }
 
         txtNoteTitle.addTextChangedListener(textChangeListener)
@@ -108,7 +115,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                saveNoteIntoViewModel.run()
+                saveNoteIntoViewModel()
                 onBackPressed()
                 true
             }
@@ -145,7 +152,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         }
     }
 
-    override fun renderData(data: NoteViewState.Data) {
+    override fun renderData(data: NoteData) {
         if (data.isDeleted) finish()
 
         note = data.note
