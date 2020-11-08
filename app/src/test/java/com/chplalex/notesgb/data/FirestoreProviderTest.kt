@@ -5,13 +5,17 @@ import com.chplalex.notesgb.data.errors.NoAuthException
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.data.model.NoteResult
 import com.chplalex.notesgb.data.provider.FirestoreProvider
-import com.firebase.ui.auth.data.model.User
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import io.mockk.*
 import junit.framework.Assert.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -51,75 +55,154 @@ class FirestoreProviderTest {
     }
 
     @Test
-    fun `if no auth should throw`() {
-        var result: Any? = null
+    fun `if no auth should throw`() = runBlocking {
         every { mockAuth.currentUser } returns null
-        provider.getNotes().observeForever {
-            result = (it as? NoteResult.Error)?.error
-        }
-        assertTrue(result is NoAuthException)
+        val noteResult = provider.getNotes().receive()
+        assertTrue(noteResult is NoteResult.Error && noteResult.error is NoAuthException)
     }
 
     @Test
-    fun `when db don't return error getNotes() should return notes`() {
-        var resultNotes: List<Note>? = null
+    fun `when db return data getNotes() should return notes`() = runBlocking {
         val slot = slot<EventListener<QuerySnapshot>>()
         val mockSnapshot = mockk<QuerySnapshot>()
 
         every { mockSnapshot.documents } returns listOf(mockDocument1, mockDocument2, mockDocument3)
-        every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
+        every {
+            mockCollection.orderBy("lastChanged", Query.Direction.DESCENDING)
+                    .addSnapshotListener(capture(slot))
+        } returns mockk()
 
-        provider.getNotes().observeForever {
-            resultNotes = (it as NoteResult.Success<List<Note>>)?.data
+        val container = async(Dispatchers.IO) {
+            provider.getNotes().receive()
         }
+
+        delay(100)
 
         slot.captured.onEvent(mockSnapshot, null)
 
-        assertEquals(testNotes, resultNotes)
-    }
-
-    @Test // TODO: не работает. Непонятно почему
-    fun `when db returns error getNotes should return error`() {
-        val testData = mockk<FirebaseFirestoreException>()
-        var testResult: Throwable? = null
-        val slot = slot<EventListener<QuerySnapshot>>()
-
-        every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
-
-        provider.getNotes().observeForever {
-            testResult = (it as NoteResult.Error).error
+        when (val noteResult = container.await()) {
+            null -> assertTrue(false)
+            is NoteResult.Error -> assertTrue(false)
+            is NoteResult.Success<*> -> assertEquals(testNotes, noteResult.data)
         }
-
-        slot.captured.onEvent(null, testData)
-
-        assertEquals(testData, testResult)
     }
 
     @Test
-    fun `saveNote calls document set once`() {
+    fun `when db returns error getNotes should return error`() = runBlocking {
+        val testError = mockk<FirebaseFirestoreException>()
+        val slot = slot<EventListener<QuerySnapshot>>()
+
+        every {
+            mockCollection.orderBy("lastChanged", Query.Direction.DESCENDING)
+                    .addSnapshotListener(capture(slot))
+        } returns mockk()
+
+        val container = async(Dispatchers.IO) {
+            provider.getNotes().receive()
+        }
+
+        while (!slot.isCaptured) {
+            delay(10)
+        }
+
+        slot.captured.onEvent(null, testError)
+
+        when (val testResult = container.await()) {
+            null -> assertTrue(false)
+            is NoteResult.Success<*> -> assertTrue(false)
+            is NoteResult.Error -> assertEquals(testError, testResult.error)
+        }
+
+    }
+
+    @Test
+    fun `saveNote calls document set once`() = runBlocking {
+        val testData = testNotes[0]
         val mockDocumentReference = mockk<DocumentReference>()
-        every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
-        provider.saveNote(testNotes[0])
+        val slotSuccess = slot<OnSuccessListener<in Void>>()
+
+        every { mockCollection.document(testData.id) } returns mockDocumentReference
+        every {
+            mockDocumentReference.set(testData)
+                    .addOnSuccessListener(capture(slotSuccess))
+                    .addOnFailureListener(any())
+        } returns mockk()
+
+        val container = async(Dispatchers.IO) {
+            provider.saveNote(testNotes[0])
+        }
+
+        while (!slotSuccess.isCaptured) {
+            delay(10)
+        }
+
+        slotSuccess.captured.onSuccess(null)
+
+        container.await()
+
         verify(exactly = 1) { mockDocumentReference.set(testNotes[0]) }
     }
 
     @Test
-    fun `saveNote return Note`() {
+    fun `saveNote return Note`() = runBlocking {
         val testData = testNotes[0]
         var testResult: Note? = null
         val mockDocumentReference = mockk<DocumentReference>()
-        val slot = slot<OnSuccessListener<in Void>>()
+        val slotSuccess = slot<OnSuccessListener<in Void>>()
 
         every { mockCollection.document(testData.id) } returns mockDocumentReference
-        every { mockDocumentReference.set(testData).addOnSuccessListener(capture(slot)) } returns mockk()
+        every {
+            mockDocumentReference.set(testData)
+                    .addOnSuccessListener(capture(slotSuccess))
+                    .addOnFailureListener(any())
+        } returns mockk()
 
-        provider.saveNote(testNotes[0]).observeForever {
-            testResult = (it as? NoteResult.Success<Note>)?.data
+        val container = async(Dispatchers.IO) {
+            provider.saveNote(testNotes[0])
         }
 
-        slot.captured.onSuccess(null)
+        while (!slotSuccess.isCaptured) {
+            delay(10)
+        }
+
+        slotSuccess.captured.onSuccess(null)
+
+        testResult = container.await()
 
         assertNotNull(testResult)
         assertEquals(testData, testResult)
+    }
+
+    @Test
+    fun `saveNote throws exception`() = runBlocking {
+        val testData = testNotes[0]
+        val testError = mockk<FirebaseFirestoreException>()
+        var testResult: Throwable? = null
+        val mockDocumentReference = mockk<DocumentReference>()
+        val slotFailure = slot<OnFailureListener>()
+
+        every { mockCollection.document(testData.id) } returns mockDocumentReference
+        every {
+            mockDocumentReference.set(testData)
+                    .addOnSuccessListener(any())
+                    .addOnFailureListener(capture(slotFailure))
+        } returns mockk()
+
+        val container = async(Dispatchers.IO) {
+            try {
+                provider.saveNote(testNotes[0])
+                null
+            } catch (error: Throwable) {
+                error
+            }
+        }
+        while (!slotFailure.isCaptured) {
+            delay(10)
+        }
+        slotFailure.captured.onFailure(testError)
+        testResult = container.await()
+
+        assertNotNull(testResult)
+        assertEquals(testError, testResult)
     }
 }
