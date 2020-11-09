@@ -41,7 +41,7 @@ class NoteActivityTest {
     fun setUp() {
         loadKoinModules(listOf(module { viewModel { viewModel } }))
 
-        every { viewModel.getViewState() } returns viewStateLiveData
+        every { viewModel.getDataChannel() } returns viewStateLiveData
         every { viewModel.loadNote(any()) } just runs
         every { viewModel.saveChanges(any()) } just runs
         every { viewModel.deleteNote() } just runs

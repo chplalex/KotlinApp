@@ -57,7 +57,7 @@ class MainActivityTest {
                 )
         )
 
-        every { viewModel.getViewState() } returns viewStateLiveData
+        every { viewModel.getDataChannel() } returns viewStateLiveData
 
         mainActivityTestRule.launchActivity(null)
         viewStateLiveData.postValue(MainViewState(notes = testNotes))

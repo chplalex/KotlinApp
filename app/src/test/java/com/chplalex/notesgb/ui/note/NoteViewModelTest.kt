@@ -5,11 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.data.model.NoteResult
+import com.google.firebase.firestore.FirebaseFirestoreException
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertFalse
+import junit.framework.Assert.*
+import kotlinx.coroutines.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,15 +21,13 @@ class NoteViewModelTest {
     @get:Rule
     val taskExecutorRule = InstantTaskExecutorRule()
 
+    private val mockError = mockk<FirebaseFirestoreException>()
     private val mockRepository: Repository = mockk<Repository>()
-    private val noteLiveData = MutableLiveData<NoteResult>()
     private lateinit var noteViewModel: NoteViewModel
 
     @Before
     fun setUp() {
-//        every { mockRepository.getNoteById(any()) } returns noteLiveData
         noteViewModel = NoteViewModel(mockRepository)
-        noteViewModel.loadNote("1")
     }
 
     @Test
@@ -36,27 +36,48 @@ class NoteViewModelTest {
     }
 
     @Test
-    fun `load error - should return error`() {
-        val testData = Throwable("any error")
-        var testResult: Throwable? = null
-//        noteViewModel.getViewState().observeForever { testResult = it?.error }
-        noteLiveData.value = NoteResult.Error(testData)
-        assertEquals(testData, testResult)
+    fun `when data loading throws error - should return error`() = runBlocking {
+        val id = "1"
+        coEvery { mockRepository.getNoteById(id) } throws (mockError)
+
+        val deferred = async (Dispatchers.IO) {
+            noteViewModel.getErrorChannel().receive()
+        }
+
+        noteViewModel.loadNote(id)
+
+        assertEquals(mockError, deferred.await())
     }
 
     @Test
-    fun `load note - should return note`() {
-        val testData = Note("1")
-        var testResult: Note? = null
-//        noteViewModel.getViewState().observeForever { testResult = it?.data?.note }
-        noteLiveData.value = NoteResult.Success(testData)
+    fun `when note loaded - should return note`() = runBlocking {
+        val id = "1"
+        val testData = Note(id)
+
+        coEvery { mockRepository.getNoteById(id) } returns testData
+
+        val deferred = async (Dispatchers.IO) {
+            noteViewModel.getDataChannel().receive()
+        }
+
+        noteViewModel.loadNote(id)
+
+        val testResult = deferred.await().note
+
         assertEquals(testData, testResult)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `noteLiveData have to remove observer`() {
+    fun `onCleared have to close channels`() = runBlocking {
         noteViewModel.onCleared()
-        assertFalse(noteLiveData.hasObservers())
+
+        while (!noteViewModel.getDataChannel().isClosedForReceive && !noteViewModel.getErrorChannel().isClosedForReceive) {
+            delay(10)
+        }
+
+        assertTrue(noteViewModel.getDataChannel().isClosedForReceive)
+        assertTrue(noteViewModel.getErrorChannel().isClosedForReceive)
     }
 
 }

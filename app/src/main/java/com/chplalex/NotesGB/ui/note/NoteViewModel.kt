@@ -1,13 +1,8 @@
 package com.chplalex.notesgb.ui.note
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.model.Note
-import com.chplalex.notesgb.data.model.NoteResult
-import com.chplalex.notesgb.data.model.NoteResult.Success
-import com.chplalex.notesgb.data.model.NoteResult.Error
 import com.chplalex.notesgb.ui.base.BaseViewModel
 import com.chplalex.ui.note.NoteData
 import kotlinx.coroutines.launch
@@ -15,7 +10,7 @@ import kotlinx.coroutines.launch
 class NoteViewModel(val repository: Repository) : BaseViewModel<NoteData>() {
 
     private val currentNote: Note?
-        get() = getViewState().poll()?.note
+        get() = getDataChannel().poll()?.note
 
     fun saveChanges(note: Note) {
         setData(NoteData(note = note))

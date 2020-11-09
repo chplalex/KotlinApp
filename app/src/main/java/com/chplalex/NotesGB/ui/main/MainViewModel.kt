@@ -6,9 +6,11 @@ import com.chplalex.notesgb.data.model.NoteResult
 import com.chplalex.notesgb.data.model.NoteResult.Success
 import com.chplalex.notesgb.data.model.NoteResult.Error
 import com.chplalex.notesgb.ui.base.BaseViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 class MainViewModel(val repository: Repository) : BaseViewModel<List<Note>?>() {
 
     private val notesChannel = repository.getNotes()

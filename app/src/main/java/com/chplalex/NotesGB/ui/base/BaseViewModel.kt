@@ -1,5 +1,6 @@
 package com.chplalex.notesgb.ui.base
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -13,18 +14,19 @@ open class BaseViewModel<S> : ViewModel(), CoroutineScope {
         Dispatchers.Default + Job()
     }
 
-    override fun onCleared() {
-        viewStateChannel.close()
+    @VisibleForTesting
+    public override fun onCleared() {
+        dataChannel.close()
         errorChannel.close()
         coroutineContext.cancel()
         super.onCleared()
     }
 
-    private val viewStateChannel = BroadcastChannel<S>(Channel.CONFLATED)
+    private val dataChannel = BroadcastChannel<S>(Channel.CONFLATED)
 
     private val errorChannel = Channel<Throwable>()
 
-    fun getViewState(): ReceiveChannel<S> = viewStateChannel.openSubscription()
+    fun getDataChannel(): ReceiveChannel<S> = dataChannel.openSubscription()
 
     fun getErrorChannel(): ReceiveChannel<Throwable> = errorChannel
 
@@ -33,6 +35,6 @@ open class BaseViewModel<S> : ViewModel(), CoroutineScope {
     }
 
     protected fun setData(data: S) = launch {
-        viewStateChannel.send(data)
+        dataChannel.send(data)
     }
 }

@@ -1,12 +1,16 @@
 package com.chplalex.notesgb.ui.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.errors.NoAuthException
 import com.chplalex.notesgb.data.model.User
 import io.mockk.*
 import junit.framework.Assert
+import junit.framework.Assert.assertNotNull
+import junit.framework.Assert.assertTrue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -18,45 +22,51 @@ class SplashViewModelTest {
     val taskExecutorRule = InstantTaskExecutorRule()
 
     private val mockRepository: Repository = mockk<Repository>()
-    private val user = User("Alexander", "chepel.alexander@gmail.com")
     private lateinit var splashViewModel: SplashViewModel
+    private val user = User(name = "chplalex", email = "chepel.alexander@gmail.com")
 
     @Before
     fun setUp() {
-        coEvery { mockRepository.getCurrentUser() } returns user
         splashViewModel = SplashViewModel(mockRepository)
-        splashViewModel.requestUser()
     }
 
     @Test
-    fun `should request getCurrentUser() once`() = runBlocking {
+    fun `requestUser() should request getCurrentUser() once`() = runBlocking {
+        coEvery { mockRepository.getCurrentUser() } returns user
+
+        splashViewModel.requestUser()
+
         coVerify(exactly = 1) { mockRepository.getCurrentUser() }
     }
 
     @Test
-    fun `load null - should return NoAuthException`() {
-        val testData = NoAuthException()
-        var testResult: Throwable? = null
-//        splashViewModel.getViewState().observeForever { testResult = it?.error }
-//        splashLiveData.value = null
-        Assert.assertEquals(testData, testResult)
+    fun `rep returns user - should return true`(): Unit = runBlocking {
+        coEvery { mockRepository.getCurrentUser() } returns user
+
+        val deferred = async(Dispatchers.IO) {
+            splashViewModel.getDataChannel().receive()
+        }
+
+        splashViewModel.requestUser()
+        val testResult = deferred.await()
+
+        assertNotNull(testResult)
+        assertTrue(testResult)
     }
 
     @Test
-    fun `load user - should return true`() {
-        val testData = User(name = "chplalex", email = "chepel.alexander@gmail.com")
-        var testResult: Boolean? = null
-//        splashViewModel.getViewState().observeForever { it -> testResult = it.data }
-//        splashLiveData.value = testData
-        Assert.assertNotNull(testResult)
-        testResult?.let { Assert.assertTrue(it) }
-    }
+    fun `rep returns null - it should return NoAuthException`() = runBlocking {
+        coEvery { mockRepository.getCurrentUser() } returns null
 
-    @Test
-    fun `noteLiveData have to remove observer`() {
-//        splashViewModel.onCleared()
-//        Assert.assertFalse(splashLiveData.hasObservers())
-    }
+        val deferred = async(Dispatchers.IO) {
+            splashViewModel.getErrorChannel().receive()
+        }
 
+        splashViewModel.requestUser()
+        val testResult = deferred.await()
+
+        assertNotNull(testResult)
+        assertTrue(testResult is NoAuthException)
+    }
 
 }

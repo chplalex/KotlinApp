@@ -1,15 +1,20 @@
 package com.chplalex.notesgb.ui.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.data.model.NoteResult
+import com.google.firebase.FirebaseException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,13 +24,16 @@ class MainViewModelTest {
     @get:Rule
     val taskExecutorRule = InstantTaskExecutorRule()
 
+    private val mockError = mockk<FirebaseException>()
     private val mockRepository: Repository = mockk<Repository>()
-    private val notesLiveData = MutableLiveData<NoteResult>()
+    private val dataChannel = Channel<NoteResult>(Channel.CONFLATED)
+    @ExperimentalCoroutinesApi
     private lateinit var viewModel: MainViewModel
 
+    @ExperimentalCoroutinesApi
     @Before
     fun setUp() {
-        //every { mockRepository.getNotes() } returns notesLiveData
+        every { mockRepository.getNotes() } returns dataChannel
         viewModel = MainViewModel(mockRepository)
     }
 
@@ -35,27 +43,27 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `load error - should return error`() {
-        val testData = Throwable("error")
-        var testResult: Throwable? = null
-        //viewModel.getViewState().observeForever { testResult = it?.error }
-        notesLiveData.value = NoteResult.Error(testData)
-        assertEquals(testData, testResult)
+    fun `load error - should return error`() = runBlocking {
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `load notes - should return notes`() {
+    fun `load notes - should return notes`() = runBlocking {
         val testData = listOf(Note("1"), Note("2"), Note("3"))
-        var testResult: List<Note>? = null
-        //viewModel.getViewState().observeForever { testResult = it?.data }
-        notesLiveData.value = NoteResult.Success(testData)
-        assertEquals(testData, testResult)
+        val deferred = async (Dispatchers.IO) {
+            viewModel.getDataChannel().receive()
+        }
+        dataChannel.send(NoteResult.Success(testData))
+        val resultData = deferred.await()
+        assertEquals(testData, resultData)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `have to remove observer`() {
-        //viewModel.onCleared()
-        assertFalse(notesLiveData.hasObservers())
+    fun `onCleared() have to close channels`() {
+        viewModel.onCleared()
+        assertTrue(viewModel.getDataChannel().isClosedForReceive)
+        assertTrue(viewModel.getErrorChannel().isClosedForReceive)
     }
 
 }

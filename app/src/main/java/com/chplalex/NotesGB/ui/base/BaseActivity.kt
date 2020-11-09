@@ -36,7 +36,7 @@ abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
     override fun onStart() {
         super.onStart()
         dataJob = launch {
-            viewModel.getViewState().consumeEach {
+            viewModel.getDataChannel().consumeEach {
                 renderData(it)
             }
         }
