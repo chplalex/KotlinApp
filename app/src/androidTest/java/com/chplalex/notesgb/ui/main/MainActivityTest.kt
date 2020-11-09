@@ -1,6 +1,5 @@
 package com.chplalex.notesgb.ui.main
 
-import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -29,6 +28,11 @@ import com.chplalex.notesgb.ui.note.NoteActivity
 import com.chplalex.notesgb.ui.note.NoteActivity.Companion.NOTE_KEY
 import com.chplalex.notesgb.ui.note.NoteViewModel
 import com.chplalex.notesgb.ui.splash.SplashViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.allOf
 
 class MainActivityTest {
@@ -37,7 +41,8 @@ class MainActivityTest {
     val mainActivityTestRule = IntentsTestRule(MainActivity::class.java, true, false)
 
     private val viewModel: MainViewModel = mockk(relaxed = true)
-    private val viewStateLiveData = MutableLiveData<MainViewState>()
+    private val dataChannel = Channel<List<Note>>(CONFLATED)
+    private val errorChannel = Channel<Throwable>(CONFLATED)
 
     private val testNotes = listOf(
             Note("1", "title1", "text1"),
@@ -45,8 +50,9 @@ class MainActivityTest {
             Note("3", "title3", "text3"),
     )
 
+    @ExperimentalCoroutinesApi
     @Before
-    fun setUp() {
+    fun setUp() = runBlocking {
         loadKoinModules(
                 listOf(
                         module {
@@ -57,10 +63,14 @@ class MainActivityTest {
                 )
         )
 
-        every { viewModel.getDataChannel() } returns viewStateLiveData
+        every { viewModel.getDataChannel() } returns dataChannel
 
         mainActivityTestRule.launchActivity(null)
-        viewStateLiveData.postValue(MainViewState(notes = testNotes))
+        dataChannel.send(testNotes)
+        while (!dataChannel.isEmpty) {
+            delay(10)
+        }
+        println("данные загрузились")
     }
 
     @After

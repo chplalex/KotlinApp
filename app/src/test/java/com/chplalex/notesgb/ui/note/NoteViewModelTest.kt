@@ -6,10 +6,7 @@ import com.chplalex.notesgb.data.Repository
 import com.chplalex.notesgb.data.model.Note
 import com.chplalex.notesgb.data.model.NoteResult
 import com.google.firebase.firestore.FirebaseFirestoreException
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import junit.framework.Assert.*
 import kotlinx.coroutines.*
 import org.junit.Before
@@ -31,8 +28,8 @@ class NoteViewModelTest {
     }
 
     @Test
-    fun `should request getNoteById() once`() {
-//        verify(exactly = 1) { mockRepository.getNoteById(any()) }
+    fun `should request getNoteById() once`() = runBlocking {
+        coVerify(exactly = 1) { mockRepository.getNoteById(any()) }
     }
 
     @Test

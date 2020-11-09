@@ -34,17 +34,17 @@ class NoteActivityTest {
     val noteActivityTestRule = ActivityTestRule(NoteActivity::class.java, true, false)
 
     private val viewModel: NoteViewModel = spyk(NoteViewModel(mockk()))
-    private val viewStateLiveData = MutableLiveData<NoteViewState>()
+    //private val viewStateLiveData = MutableLiveData<NoteViewState>()
     private val testNote = Note("123", "title", "body")
 
     @Before
     fun setUp() {
         loadKoinModules(listOf(module { viewModel { viewModel } }))
 
-        every { viewModel.getDataChannel() } returns viewStateLiveData
-        every { viewModel.loadNote(any()) } just runs
+//        every { viewModel.getDataChannel() } returns viewStateLiveData
+//        every { viewModel.loadNote(any()) } just runs
         every { viewModel.saveChanges(any()) } just runs
-        every { viewModel.deleteNote() } just runs
+//        every { viewModel.deleteNote() } just runs
 
         Intent().apply {
             putExtra(NOTE_KEY, testNote.id)
@@ -95,7 +95,7 @@ class NoteActivityTest {
     @Test
     fun should_show_note() {
         noteActivityTestRule.launchActivity(null)
-        viewStateLiveData.postValue(NoteViewState(NoteViewState.Data(note = testNote)))
+        //viewStateLiveData.postValue(NoteViewState(NoteViewState.Data(note = testNote)))
 
         onView(withId(R.id.txtNoteTitle)).check(matches(withText(testNote.title)))
         onView(withId(R.id.txtNoteBody)).check(matches(withText(testNote.body)))
