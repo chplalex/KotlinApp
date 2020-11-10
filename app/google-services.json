@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "137313664543-maajem9cnhv0qt7fajphajfoq4g5sphi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chplalex.notesgb",
+            "certificate_hash": "c7aedc5189b6234b139e6ce20a3141e8fde761fd"
+          }
+        },
+        {
           "client_id": "137313664543-k1h8okdlt926h94tv8lgcrk6kvf4cdu3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

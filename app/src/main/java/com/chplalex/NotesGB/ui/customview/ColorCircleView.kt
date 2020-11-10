@@ -16,8 +16,10 @@ import com.chplalex.notesgb.common.dip
 class ColorCircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        @Dimension(unit = DP) private const val defRadiusDp = 16
-        @Dimension(unit = DP) private const val defStrokeWidthDp = 1
+        @Dimension(unit = DP)
+        private const val defRadiusDp = 16
+        @Dimension(unit = DP)
+        private const val defStrokeWidthDp = 1
     }
 
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -30,21 +32,25 @@ class ColorCircleView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private var center: Pair<Float, Float> = 0f to 0f
 
-    @Dimension(unit = PX) var radius: Float = dip(defRadiusDp).toFloat()
+    @Dimension(unit = PX)
+    var radius: Float = dip(defRadiusDp).toFloat()
 
-    @ColorRes var fillColorRes: Int = R.color.color_white
+    @ColorRes
+    var fillColorRes: Int = R.color.color_white
         set(value) {
             field = value
             fillPaint.color = ContextCompat.getColor(context, value)
         }
 
-    @ColorRes var strokeColorRes: Int = R.color.secondaryTextColor
+    @ColorRes
+    var strokeColorRes: Int = R.color.secondaryTextColor
         set(value) {
             field = value
             strokePaint.color = ContextCompat.getColor(context, value)
         }
 
-    @Dimension(unit = PX) var strokeWidth: Float = dip(defStrokeWidthDp).toFloat()
+    @Dimension(unit = PX)
+    var strokeWidth: Float = dip(defStrokeWidthDp).toFloat()
         set(value) {
             field = value
             strokePaint.strokeWidth = value
@@ -71,7 +77,6 @@ class ColorCircleView @JvmOverloads constructor(context: Context, attrs: Attribu
         setMeasuredDimension(width, height)
     }
 
-
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         center = measuredWidth/2f to measuredHeight/2f
         super.onLayout(changed, left, top, right, bottom)
@@ -82,6 +87,4 @@ class ColorCircleView @JvmOverloads constructor(context: Context, attrs: Attribu
         canvas.drawCircle(center.first, center.second, radius, strokePaint)
         canvas.drawCircle(center.first, center.second, radius - strokeWidth, fillPaint)
     }
-
-
 }

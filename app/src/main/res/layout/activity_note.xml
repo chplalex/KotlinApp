@@ -61,6 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@null"
+            android:text=""
             android:hint="@string/hint_note_body"
             android:importantForAutofill="no"
             android:inputType="textMultiLine" />

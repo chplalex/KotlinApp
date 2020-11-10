@@ -7,25 +7,56 @@ import androidx.appcompat.app.AppCompatActivity
 import com.chplalex.notesgb.R
 import com.chplalex.notesgb.data.errors.NoAuthException
 import com.firebase.ui.auth.AuthUI
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
+import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
+abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
 
     companion object {
-        private const val RC_SIGN_IN = 4242
+        private val RC_SIGN_IN = 4747
     }
 
-    abstract val viewModel: BaseViewModel<T, S>
+    override val coroutineContext: CoroutineContext by lazy {
+        Dispatchers.Main + Job()
+    }
+
+    private lateinit var dataJob: Job
+    private lateinit var errorJob: Job
+
+    abstract val viewModel: BaseViewModel<T>
     abstract val layoutRes: Int?
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         layoutRes?.let { setContentView(it) }
+    }
 
-        viewModel.getViewState().observe(this, { t ->
-            t?.error?.let { renderError(it) }
-            t?.data?.let { renderData(it) }
-        })
+    override fun onStart() {
+        super.onStart()
+        dataJob = launch {
+            viewModel.getDataChannel().consumeEach {
+                renderData(it)
+            }
+        }
+
+        errorJob = launch {
+            viewModel.getErrorChannel().consumeEach {
+                renderError(it)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        dataJob.cancel()
+        errorJob.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineContext.cancel()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
